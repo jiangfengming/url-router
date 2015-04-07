@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html class="" lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>title</title>
+<script src="Router.js"></script>
+</head>
+<body>
+<script>
+var router = new Router([
+	'foo/bar',
+	'api/*',
+	['foo/abc', 'view', {foo: 111}],
+	['product/item/:id', 'product/item', {foo: 123}],
+	[/^article\/(\d+)$/, 'article', 'id', {bar: 456}],
+	[false, /^search\/(.+)$/, 'search', 'keyword', {foo: 123}], // set validate to false, 
+	['*', 'view', {masterpage: 'frame'}]
+]);
+console.log(router.resolve('foo/bar'));
+console.log(router.resolve('api/foo'));
+console.log(router.resolve('foo/abc'));
+console.log(router.resolve('product/item/111'));
+console.log(router.resolve('article/123'));
+console.log(router.resolve('search/something'));
+console.log(router.resolve('search/一二三'));
+console.log(router.resolve('everything/else'));
+</script>
+</body>
+</html>
