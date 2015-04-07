@@ -98,7 +98,8 @@ Router.prototype.resolve = function(path, method) {
 
       matches.shift();
       for (var j = 0; j < rt.params.length; j++) {
-        params[rt.params[j]] = matches[j];
+        if (rt.params[j])
+          params[rt.params[j]] = matches[j];
       }
 
       for (var k in rt.extra)
