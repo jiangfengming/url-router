@@ -8,16 +8,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fenivana/Router.git"
+    "url": "https://github.com/fenivana/Router.js.git"
   },
   "keywords": [
     "url",
     "router"
   ],
-  "author": "John Fenix",
+  "author": "Jiang Fengming",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/fenivana/Router/issues"
+    "url": "https://github.com/fenivana/Router.js/issues"
   },
-  "homepage": "https://github.com/fenivana/Router"
+  "homepage": "https://github.com/fenivana/Router.js"
 }

@@ -1,3 +1,11 @@
+/*!
+ * Router.js v1.0.1
+ * http://www.noindoin.com/
+ *
+ * Copyright 2014 Jiang Fengming <fenix@noindoin.com>
+ * Released under the MIT license
+ */
+
 function Router(conf) {
   this.routes = {};
 
