@@ -1,6 +1,7 @@
 # Router.js
 
-## browser:
+## Usage
+### browser:
 ```js
 var router = new Router([
   'foo/bar',
@@ -25,8 +26,9 @@ console.log(router.resolve('search/一二三'));
 console.log(router.resolve('everything/else'));
 ```
 
-## node.js:
+### node.js:
 ```js
+var Router = require('url-router');
 var router = new Router({
   GET: [
     [/([a-z]+)\/(\d+)/i, '$1', 'controller', 'id', {method: 'get'}],
@@ -53,3 +55,6 @@ console.log(router.resolve('article', 'POST'));
 console.log(router.resolve('article/123', 'PUT'));
 console.log(router.resolve('article/123', 'DELETE'));
 ```
+
+## License
+MIT

@@ -1,6 +1,6 @@
 {
   "name": "url-router",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "URL Router",
   "main": "Router.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "router"
   ],
   "author": "Jiang Fengming",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/fenivana/Router.js/issues"
   },

@@ -1,8 +1,7 @@
 /*!
- * Router.js v1.0.1
- * http://www.noindoin.com/
+ * Router.js v1.0.3
  *
- * Copyright 2014 Jiang Fengming <fenix@noindoin.com>
+ * Copyright (c) 2014 Jiang Fengming <fenix@noindoin.com>
  * Released under the MIT license
  */
 
@@ -77,7 +76,7 @@ Router.prototype.resolve = function(path, method) {
   if (!method)
     method = 'ALL';
 
-  var rts = this.routes[method];
+  var rts = this.routes[method] || this.routes.ALL;
 
   if (!rts)
     return null;
