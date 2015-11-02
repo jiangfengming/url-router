@@ -1,5 +1,5 @@
 /*!
- * Router.js v1.0.3
+ * Router.js v1.1.0
  *
  * Copyright (c) 2014 Jiang Fengming <fenix@noindoin.com>
  * Released under the MIT license
@@ -84,7 +84,7 @@ Router.prototype.resolve = function(path, method) {
   if (rts.string[path]) {
     return {
       path: rts.string[path].replacement,
-      params: rts.string[path].extra
+      extra: rts.string[path].extra
     };
   }
 
@@ -109,12 +109,10 @@ Router.prototype.resolve = function(path, method) {
           params[rt.params[j]] = matches[j];
       }
 
-      for (var k in rt.extra)
-        params[k] = rt.extra[k];
-
       return {
         path: replacement,
-        params: params
+        params: params,
+        extra: rt.extra
       };
     }
   }
