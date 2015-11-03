@@ -1,5 +1,5 @@
 /*!
- * Router.js v1.1.0
+ * Router.js v1.1.1
  *
  * Copyright (c) 2014 Jiang Fengming <fenix@noindoin.com>
  * Released under the MIT license
@@ -84,6 +84,7 @@ Router.prototype.resolve = function(path, method) {
   if (rts.string[path]) {
     return {
       path: rts.string[path].replacement,
+      params: {},
       extra: rts.string[path].extra
     };
   }
