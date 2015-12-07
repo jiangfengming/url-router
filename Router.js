@@ -17,7 +17,7 @@ function Router(conf) {
     var rt, validate, pattern, replacement, params, extra;
     for (var i = 0; i < routes.length; i++) {
       rt = routes[i];
-      validate = true;
+      validate = false;
 
       if (rt.constructor == String) {
         pattern = rt;
@@ -42,7 +42,7 @@ function Router(conf) {
           extra: extra
         });
       } else {
-        if (pattern.indexOf(':') == -1 && pattern.indexOf('*') == -1) {
+        if (!/:|\*|\$/.test(pattern)) {
           rts.string[pattern] = {
             replacement: replacement == '$&' ? pattern : replacement,
             extra: extra
@@ -51,11 +51,15 @@ function Router(conf) {
           params = [];
 
           pattern = pattern.replace(/[\\&()+.\[?\^{|]/g, '\\$&')
-                .replace(/\*/g, '.*')
                 .replace(/:(\w+)/g, function(str, key) {
                   params.push(key);
                   return '([^/]+)';
-                });
+                })
+                .replace(/\$(\w+)$/, function(str, key) {
+                  params.push(key);
+                  return '(.+)';
+                })
+                .replace(/\*/g, '.*');
 
           rts.regex.push({
             validate: validate,

@@ -8,13 +8,13 @@ var router = new Router([
   'api/*',
   ['foo/abc', 'view', {foo: 111}],
   ['product/item/:id', 'product/item', {foo: 123}],
+  // $foo match to end
+  ['cat/$path', 'cat'],
   // [regex, redirect_to, regex_subexpression_1, regex_subexpression_2, ..., {param1: value, param2: value, ...}]
   [/^article\/(\d+)$/, 'article', 'id', {bar: 456}],
-  
-  // by default, path will be validated with /^((\.?[\w-]+)+\/?)+$/.test(path)
-  // set validate to false to allow other characters in path
-  [false, /^search\/(.+)$/, 'search', 'keyword', {foo: 123}],
-  ['*', 'view', {masterpage: 'frame'}]
+  [/^search\/(.+)$/, 'search', 'keyword', {foo: 123}],
+  // set validate to true, path will be validated with /^((\.?[\w-]+)+\/?)+$/.test(path)
+  [true, '*', '$&', {masterpage: 'frame'}]
 ]);
 console.log(router.resolve('foo/bar'));
 console.log(router.resolve('api/foo'));
@@ -23,6 +23,8 @@ console.log(router.resolve('product/item/111'));
 console.log(router.resolve('article/123'));
 console.log(router.resolve('search/something'));
 console.log(router.resolve('search/一二三'));
+console.log(router.resolve('cat/foo'));
+console.log(router.resolve('cat/foo/bar/你好'));
 console.log(router.resolve('everything/else'));
 ```
 
