@@ -14,7 +14,7 @@ function Router(conf) {
   for (var method in conf) {
     var routes = conf[method];
     var rts = this.routes[method] = {string: {}, regex: []};
-    var rt, validate, pattern, replacement, params, extra;
+    var rt, validate, pattern, replacement, params, options;
     for (var i = 0; i < routes.length; i++) {
       rt = routes[i];
       validate = false;
@@ -23,13 +23,13 @@ function Router(conf) {
         pattern = rt;
         replacement = '$&';
         params = [];
-        extra = {};
+        options = {};
       } else {
         if (rt[0].constructor == Boolean)
           validate = rt.shift();
         pattern = rt.shift();
         replacement = rt.shift() || '$&';
-        extra = typeof rt[rt.length - 1] == 'object' ? rt.pop() : {};
+        options = typeof rt[rt.length - 1] == 'object' ? rt.pop() : {};
         params = rt;
       }
 
@@ -39,13 +39,13 @@ function Router(conf) {
           pattern: pattern,
           replacement: replacement,
           params: params,
-          extra: extra
+          options: options
         });
       } else {
         if (!/:|\*|\$/.test(pattern)) {
           rts.string[pattern] = {
             replacement: replacement == '$&' ? pattern : replacement,
-            extra: extra
+            options: options
           };
         } else {
           params = [];
@@ -66,7 +66,7 @@ function Router(conf) {
             pattern: new RegExp('^' + pattern + '$'),
             replacement: replacement,
             params: params,
-            extra: extra
+            options: options
           });
         }
       }
@@ -89,7 +89,7 @@ Router.prototype.resolve = function(path, method) {
     return {
       path: rts.string[path].replacement,
       params: {},
-      extra: rts.string[path].extra
+      options: rts.string[path].options
     };
   }
 
@@ -117,7 +117,7 @@ Router.prototype.resolve = function(path, method) {
       return {
         path: replacement,
         params: params,
-        extra: rt.extra
+        options: rt.options
       };
     }
   }
