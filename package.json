@@ -47,9 +47,6 @@
     ]
   },
   "eslintConfig": {
-    "extends": "enough",
-    "env": {
-      "browser": true
-    }
+    "extends": "enough"
   }
 }
