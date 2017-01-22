@@ -8,7 +8,7 @@
       exports: {}
     };
     factory(mod, mod.exports);
-    global.UrlRouter = mod.exports;
+    global.Router = mod.exports;
   }
 })(this, function (module, exports) {
   'use strict';

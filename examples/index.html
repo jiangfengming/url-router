@@ -3,16 +3,16 @@
 
 <head>
   <meta charset="utf-8" />
-  <script src="../dist/UrlRouter.js"></script>
+  <script src="../dist/Router.js"></script>
 </head>
 
 <body>
   <p>Open console to see results.</p>
 
   <script>
-    UrlRouter.log = true
+    Router.log = true
 
-    const router = new UrlRouter([
+    const router = new Router([
       ['/path/from', '/resolve/to', { layout: 'main' }],
       '/foo/bar',
       '/baz/*',
@@ -29,7 +29,7 @@
     router.match('/article/123')
 
 
-    const router2 = new UrlRouter({
+    const router2 = new Router({
       GET: [
         ['/article/:id', '/article', { method: 'get' }]
       ],
