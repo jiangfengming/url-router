@@ -1,4 +1,5 @@
-# Router.js
+# Router
+A URL router library.
 
 ## Installing
 
