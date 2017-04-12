@@ -57,7 +57,7 @@
             var rt = _rt.concat();
             pattern = rt.shift();
             replacement = rt.shift() || '$&';
-            options = _typeof(rt[rt.length - 1]) == 'object' ? rt.pop() : {};
+            options = _typeof(rt[rt.length - 1]) === 'object' ? rt.pop() : {};
             params = rt;
           }
 
@@ -154,7 +154,7 @@
           var matches = path.match(rt.pattern);
           if (matches) {
             _replacement = rt.replacement;
-            if (_replacement.indexOf('$') !== -1) {
+            if (_replacement.constructor === String && _replacement.indexOf('$') !== -1) {
               _replacement = _replacement === '$&' ? path : path.replace(rt.pattern, _replacement);
             }
 

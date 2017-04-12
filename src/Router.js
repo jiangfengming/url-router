@@ -23,7 +23,7 @@ class Router {
           const rt = _rt.concat()
           pattern = rt.shift()
           replacement = rt.shift() || '$&'
-          options = typeof rt[rt.length - 1] == 'object' ? rt.pop() : {}
+          options = typeof rt[rt.length - 1] === 'object' ? rt.pop() : {}
           params = rt
         }
 
@@ -90,7 +90,7 @@ class Router {
         const matches = path.match(rt.pattern)
         if (matches) {
           replacement = rt.replacement
-          if (replacement.indexOf('$') !== -1) {
+          if (replacement.constructor === String && replacement.indexOf('$') !== -1) {
             replacement = replacement === '$&' ? path : path.replace(rt.pattern, replacement)
           }
 
