@@ -43,50 +43,50 @@
         };
 
         var _loop = function _loop(_rt) {
-          var pattern = void 0,
-              replacement = void 0,
+          var path = void 0,
+              result = void 0,
               params = void 0,
               options = void 0;
 
           if (_rt.constructor === String) {
-            pattern = _rt;
-            replacement = '$&';
+            path = _rt;
+            result = '$&';
             params = [];
             options = {};
           } else {
-            var rt = _rt.concat();
-            pattern = rt.shift();
-            replacement = rt.shift() || '$&';
+            var rt = _rt.concat(); // clone, preserve original route
+            path = rt.shift();
+            result = rt.length ? rt.shift() : '$&';
             options = _typeof(rt[rt.length - 1]) === 'object' ? rt.pop() : {};
             params = rt;
           }
 
-          if (pattern.constructor === RegExp) {
+          if (path.constructor === RegExp) {
             rts.regex.push({
-              pattern: pattern,
-              replacement: replacement,
+              path: path,
+              result: result,
               params: params,
               options: options,
               origin: _rt
             });
           } else {
-            if (!/:|\*|\$/.test(pattern)) {
-              rts.string[pattern] = {
-                replacement: replacement === '$&' ? pattern : replacement,
+            if (!/:|\*|\$/.test(path)) {
+              rts.string[path] = {
+                result: result === '$&' ? path : result,
                 options: options,
                 origin: _rt
               };
             } else {
               params = [];
 
-              pattern = pattern.replace(/[\\&()+.[?^{|]/g, '\\$&').replace(/:(\w+)/g, function (str, key) {
+              path = path.replace(/[\\&()+.[?^{|]/g, '\\$&').replace(/:(\w+)/g, function (str, key) {
                 params.push(key);
                 return '([^/]+)';
               }).replace(/\*/g, '.*');
 
               rts.regex.push({
-                pattern: new RegExp('^' + pattern + '$'),
-                replacement: replacement,
+                path: new RegExp('^' + path + '$'),
+                result: result,
                 params: params,
                 options: options,
                 origin: _rt
@@ -114,7 +114,7 @@
       }
     }
 
-    Router.prototype.match = function match(path) {
+    Router.prototype.find = function find(path) {
       var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'ALL';
 
       var rts = this.routes[method];
@@ -122,7 +122,7 @@
       if (rts) {
         if (rts.string[path]) {
           var match = {
-            path: rts.string[path].replacement,
+            result: rts.string[path].result,
             params: {},
             options: rts.string[path].options,
             origin: rts.string[path].origin
@@ -135,7 +135,7 @@
           return match;
         }
 
-        var _replacement = void 0;
+        var _result = void 0;
         var _params = {};
         for (var _iterator2 = rts.regex, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
           var _ref2;
@@ -151,11 +151,11 @@
 
           var rt = _ref2;
 
-          var matches = path.match(rt.pattern);
+          var matches = path.match(rt.path);
           if (matches) {
-            _replacement = rt.replacement;
-            if (_replacement.constructor === String && _replacement.indexOf('$') !== -1) {
-              _replacement = _replacement === '$&' ? path : path.replace(rt.pattern, _replacement);
+            _result = rt.result;
+            if (_result.constructor === String && _result.indexOf('$') !== -1) {
+              _result = _result === '$&' ? path : path.replace(rt.path, _result);
             }
 
             matches.shift();
@@ -166,7 +166,7 @@
             }
 
             var _match = {
-              path: _replacement,
+              result: _result,
               params: _params,
               options: rt.options,
               origin: rt.origin

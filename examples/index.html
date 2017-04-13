@@ -10,47 +10,73 @@
   <p>Open console to see results.</p>
 
   <script>
+    // turn on log
     Router.log = true
 
-    const router = new Router([
+    // in browser
+    let router = new Router([
       ['/path/from', '/resolve/to', { layout: 'main' }],
       '/foo/bar',
       '/baz/*',
       ['/user/:id/profile', '/user/profile'],
       ['/services/:controller/:method', '/service/$1'],
       [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }],
+      ['/resolve/to/function', () => { console.log('hello') } ],
+      ['/resolve/to/object', { template: 'hello' }],
+      ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')]
     ])
 
-    router.match('/path/from')
-    router.match('/foo/bar')
-    router.match('/baz/hello')
-    router.match('/user/123/profile')
-    router.match('/services/article/create')
-    router.match('/article/123')
+    router.find('/path/from')
+    router.find('/foo/bar')
+    router.find('/baz/hello')
+    router.find('/user/123/profile')
+    router.find('/services/article/create')
+    router.find('/article/123')
+    router.find('/resolve/to/function')
+    router.find('/resolve/to/object')
+    router.find('/in/fact/you/can/resolve/to/any/type')
 
+    // in Node.js
+    const ArticleController = {
+      get(req, res) {
+        // ...
+      },
 
-    const router2 = new Router({
+      create(req, res) {
+        // ...
+      },
+
+      update(req, res) {
+        // ...
+      },
+
+      remove(req, res) {
+        // ...
+      }
+    }
+
+    router = new Router({
       GET: [
-        ['/article/:id', '/article', { method: 'get' }]
+        ['/article/:id', ArticleController.get]
       ],
 
       POST: [
-        ['/article', '/article', { method: 'create' }]
+        ['/article', ArticleController.create]
       ],
 
       PUT: [
-        ['/article/:id', '/article', { method: 'update' }]
+        ['/article/:id', ArticleController.update]
       ],
 
       DELETE: [
-        ['/article/:id', '/article', { method: 'remove' }]
+        ['/article/:id', ArticleController.remove]
       ]
     })
 
-    router2.match('/article/123', 'GET')
-    router2.match('/article', 'POST')
-    router2.match('/article/123', 'PUT')
-    router2.match('/article/123', 'DELETE')
+    router.find('/article/123', 'GET')
+    router.find('/article', 'POST')
+    router.find('/article/123', 'PUT')
+    router.find('/article/123', 'DELETE')
   </script>
 </body>
 

@@ -12,40 +12,40 @@ class Router {
       }
 
       for (const _rt of routes) {
-        let pattern, replacement, params, options
+        let path, result, params, options
 
         if (_rt.constructor === String) {
-          pattern = _rt
-          replacement = '$&'
+          path = _rt
+          result = '$&'
           params = []
           options = {}
         } else {
-          const rt = _rt.concat()
-          pattern = rt.shift()
-          replacement = rt.shift() || '$&'
+          const rt = _rt.concat() // clone, preserve original route
+          path = rt.shift()
+          result = rt.length ? rt.shift() : '$&'
           options = typeof rt[rt.length - 1] === 'object' ? rt.pop() : {}
           params = rt
         }
 
-        if (pattern.constructor === RegExp) {
+        if (path.constructor === RegExp) {
           rts.regex.push({
-            pattern,
-            replacement,
+            path,
+            result,
             params,
             options,
             origin: _rt
           })
         } else {
-          if (!/:|\*|\$/.test(pattern)) {
-            rts.string[pattern] = {
-              replacement: replacement === '$&' ? pattern : replacement,
+          if (!/:|\*|\$/.test(path)) {
+            rts.string[path] = {
+              result: result === '$&' ? path : result,
               options,
               origin: _rt
             }
           } else {
             params = []
 
-            pattern = pattern.replace(/[\\&()+.[?^{|]/g, '\\$&')
+            path = path.replace(/[\\&()+.[?^{|]/g, '\\$&')
               .replace(/:(\w+)/g, (str, key) => {
                 params.push(key)
                 return '([^/]+)'
@@ -53,8 +53,8 @@ class Router {
               .replace(/\*/g, '.*')
 
             rts.regex.push({
-              pattern: new RegExp(`^${pattern}$`),
-              replacement,
+              path: new RegExp(`^${path}$`),
+              result,
               params,
               options,
               origin: _rt
@@ -65,13 +65,13 @@ class Router {
     }
   }
 
-  match(path, method = 'ALL') {
+  find(path, method = 'ALL') {
     const rts = this.routes[method]
 
     if (rts) {
       if (rts.string[path]) {
         const match = {
-          path: rts.string[path].replacement,
+          result: rts.string[path].result,
           params: {},
           options: rts.string[path].options,
           origin: rts.string[path].origin
@@ -84,14 +84,14 @@ class Router {
         return match
       }
 
-      let replacement
+      let result
       const params = {}
       for (const rt of rts.regex) {
-        const matches = path.match(rt.pattern)
+        const matches = path.match(rt.path)
         if (matches) {
-          replacement = rt.replacement
-          if (replacement.constructor === String && replacement.indexOf('$') !== -1) {
-            replacement = replacement === '$&' ? path : path.replace(rt.pattern, replacement)
+          result = rt.result
+          if (result.constructor === String && result.indexOf('$') !== -1) {
+            result = result === '$&' ? path : path.replace(rt.path, result)
           }
 
           matches.shift()
@@ -102,7 +102,7 @@ class Router {
           }
 
           const match = {
-            path: replacement,
+            result,
             params,
             options: rt.options,
             origin: rt.origin

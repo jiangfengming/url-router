@@ -7,7 +7,7 @@ A URL router library.
 npm install url-router --save
 ```
 
-## Usage
+## Examples
 
 ### Browser:
 
@@ -21,9 +21,12 @@ const router = new Router([
   ['/user/:id/profile', '/user/profile'],
   ['/services/:controller/:method', '/service/$1'],
   [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }],
+  ['/resolve/to/function', () => { console.log('hello') } ],
+  ['/resolve/to/object', { template: 'hello' }],
+  ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')]
 ])
 
-const route = router.match(location.pathname)
+const route = router.find(location.pathname)
 ```
 
 ### node.js:
@@ -33,28 +36,30 @@ const http = require('http')
 const Router = require('url-router')
 const url = require('url')
 
+const ArticleController = require('./controllers/article')
+
 const router = new Router({
   GET: [
-    ['/article/:id', '/article', { method: 'get' }]
+    ['/article/:id', ArticleController.get]
   ],
 
   POST: [
-    ['/article', '/article', { method: 'create' }]
+    ['/article', ArticleController.create]
   ],
 
   PUT: [
-    ['/article/:id', '/article', { method: 'update' }]
+    ['/article/:id', ArticleController.update]
   ],
 
   DELETE: [
-    ['/article/:id', '/article', { method: 'remove' }]
+    ['/article/:id', ArticleController.remove]
   ]
 })
 
 http.createServer((req, res) => {
   const _url = url.parse(req.url)
-  const route = router.match(_url.pathname, req.method)
-
+  const route = router.find(_url.pathname, req.method)
+  route.result(req, res)
   // ...
 }).listen(8080)
 ```
@@ -122,33 +127,99 @@ const routes = {
 ```js
 const router = new Router([
   /*
-    Syntax: [from, to, options]
+    Syntax: [path, result, options]
 
-    from: String. the path to match against.
-    to: String. the path rewrited to.
+    path: String. The path to match against.
+    result: Any. The result.
     options: Object. Optional. If set, it will be returned as 'matchedRoute.options' unchanged.
   */
-  ['/path/from', '/resolve/to', { layout: 'main' }],
+  ['/path/from', '/resolve/to', { layout: 'main', requireLogin: true }],
   /*
-    router.match('/path/from')
+    router.find('/path/from')
 
     Returns:
 
     {
-      path: '/resolve/to',
+      result: '/resolve/to',
       params: {},
-      options: { layout: 'main' },
-      origin: ['/path/from', '/resolve/to', { layout: 'main' }]
+      options: { layout: 'main', requireLogin: true },
+      origin: ['/path/from', '/resolve/to', { layout: 'main', requireLogin: true }]
+    }
+  */
+
+  // resolve to a function
+  ['/resolve/to/function', () => { console.log('hello') }, { layout: 'main', requireLogin: true } ],
+  /*
+    router.find('/resolve/to/function')
+
+    Returns:
+
+    {
+      result: () => { console.log('hello') },
+      params: {},
+      options: { layout: 'main', requireLogin: true },
+      origin: ['/resolve/to/function', () => { console.log('hello') }, { layout: 'main', requireLogin: true } ]
+    }
+  */
+
+
+  // resolve to an object
+  ['/resolve/to/object', { template: 'hello' }, { layout: 'main', requireLogin: true } ],
+  /*
+    router.find('/resolve/to/object')
+
+    Returns:
+
+    {
+      result: { template: 'hello' },
+      params: {},
+      options: { layout: 'main', requireLogin: true },
+      origin: ['/resolve/to/object', { template: 'hello' }, { layout: 'main', requireLogin: true } ]
+    }
+  */
+
+  // resolve to any type
+  ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')]
+
+  /*
+    Parameters
+
+    Words begin with : will be resolved as parameters.
+  */
+  ['/user/:id/profile', '/user/profile'],
+  /*
+    router.find('/user/123/profile')
+
+    Returns:
+
+    {
+      result: '/user/profile',
+      params: { id: 123 },
+      options: {},
+      origin: ['/user/:id/profile', '/user/profile'],
     }
   */
 
 
   /*
-    Syntax: from
-
-    Shorthand of [from, '$&']
-    '$&' means keep the path unchanged.
+    Internally, ":key" will be converted to regular expression sub-pattern. So we can use $1~$9 to access them in result
   */
+  ['/services/:controller/:method', '/service/$1'],
+  /*
+    router.find('/services/article/create')
+
+    Returns:
+
+    {
+      result: '/services/article',
+      params: { controller: 'article', method: 'create' },
+      options: {},
+      origin: ['/services/:controller/:method', '/service/$1']
+    }
+  */
+
+
+  // Shorthand of [path, '$&']. '$&' means keep the path unchanged.
   '/foo/bar',
   /*
     router.match('/foo/bar')
@@ -156,7 +227,7 @@ const router = new Router([
     Returns:
 
     {
-      path: '/foo/bar',
+      result: '/foo/bar',
       params: {},
       options: {},
       origin: '/foo/bar'
@@ -169,7 +240,7 @@ const router = new Router([
   */
   '/baz/*',
   /*
-    Shorthand of ['/baz/*', '$&]
+    Shorthand of ['/baz/*', '$&']
 
     This route will match all paths begin with '/baz/'.
 
@@ -178,7 +249,7 @@ const router = new Router([
     Returns:
 
     {
-      path: '/baz/hello',
+      result: '/baz/hello',
       params: {},
       options: {},
       origin: '/barz/*'
@@ -187,56 +258,18 @@ const router = new Router([
 
 
   /*
-    Parameters
-
-    Words begin with : will be resolved as parameters.
-  */
-  ['/user/:id/profile', '/user/profile'],
-  /*
-    router.match('/user/123/profile')
-
-    Returns:
-
-    {
-      path: '/user/profile',
-      params: { id: 123 },
-      options: {},
-      origin: ['/user/:id/profile', '/user/profile'],
-    }
-  */
-
-
-  /*
-    Internally, ":key" will be converted to regular expression sub-pattern. So we can use $1~$9 to access them in 'to'
-  */
-  ['/services/:controller/:method', '/service/$1'],
-  /*
-    router.match('/services/article/create')
-
-    Returns:
-
-    {
-      path: '/services/article',
-      params: { controller: 'article', method: 'create' },
-      options: {},
-      origin: ['/services/:controller/:method', '/service/$1']
-    }
-  */
-
-
-  /*
-    'from' can be a regular expression.
-    The matched substrings will be set as params, the keys are defined after 'to' but before 'options'.
+    path can be a regular expression.
+    The matched substrings will be set as params, the name of params are defined after result and before options.
   */
   [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }],
   /*
-    router.match('/article/123')
+    router.find('/article/123')
 
     Returns:
 
     {
-      path: '/article',
-      params: { id: 123 },
+      result: '/article',
+      params: { id: '123' },
       options: { layout: 'main' },
       origin: [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }]
     }
@@ -244,7 +277,7 @@ const router = new Router([
 ])
 ```
 
-### router.match(path, method = 'ALL')
+### router.find(path, method = 'ALL')
 Gives the path and method, returns a matched route.
 
 #### Returns

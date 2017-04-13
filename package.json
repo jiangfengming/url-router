@@ -1,6 +1,6 @@
 {
   "name": "url-router",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "URL Router",
   "main": "dist/Router.js",
   "scripts": {
