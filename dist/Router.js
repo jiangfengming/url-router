@@ -154,7 +154,7 @@
           var matches = path.match(rt.path);
           if (matches) {
             _result = rt.result;
-            if (_result.constructor === String && _result.indexOf('$') !== -1) {
+            if (_result && _result.constructor === String && _result.indexOf('$') !== -1) {
               _result = _result === '$&' ? path : path.replace(rt.path, _result);
             }
 

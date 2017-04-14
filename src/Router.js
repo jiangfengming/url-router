@@ -90,7 +90,7 @@ class Router {
         const matches = path.match(rt.path)
         if (matches) {
           result = rt.result
-          if (result.constructor === String && result.indexOf('$') !== -1) {
+          if (result && result.constructor === String && result.indexOf('$') !== -1) {
             result = result === '$&' ? path : path.replace(rt.path, result)
           }
 

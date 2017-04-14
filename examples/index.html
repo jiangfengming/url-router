@@ -16,25 +16,26 @@
     // in browser
     let router = new Router([
       ['/path/from', '/resolve/to', { layout: 'main' }],
-      '/foo/bar',
-      '/baz/*',
+      ['/resolve/to/function', () => { console.log('hello') }],
+      ['/resolve/to/object', { template: 'hello' }],
+      ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')],
       ['/user/:id/profile', '/user/profile'],
       ['/services/:controller/:method', '/service/$1'],
-      [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }],
-      ['/resolve/to/function', () => { console.log('hello') } ],
-      ['/resolve/to/object', { template: 'hello' }],
-      ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')]
+      '/foo/bar',
+      '/baz/*',
+      [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }]
     ])
 
     router.find('/path/from')
-    router.find('/foo/bar')
-    router.find('/baz/hello')
-    router.find('/user/123/profile')
-    router.find('/services/article/create')
-    router.find('/article/123')
     router.find('/resolve/to/function')
     router.find('/resolve/to/object')
     router.find('/in/fact/you/can/resolve/to/any/type')
+    router.find('/user/123/profile')
+    router.find('/services/article/create')
+    router.find('/article/123')
+    router.find('/foo/bar')
+    router.find('/baz/hello')
+
 
     // in Node.js
     const ArticleController = {

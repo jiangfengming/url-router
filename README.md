@@ -16,14 +16,14 @@ import Router from 'url-router'
 
 const router = new Router([
   ['/path/from', '/resolve/to', { layout: 'main' }],
-  '/foo/bar',
-  '/baz/*',
+  ['/resolve/to/function', () => { console.log('hello') }],
+  ['/resolve/to/object', { template: 'hello' }],
+  ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')],
   ['/user/:id/profile', '/user/profile'],
   ['/services/:controller/:method', '/service/$1'],
-  [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }],
-  ['/resolve/to/function', () => { console.log('hello') } ],
-  ['/resolve/to/object', { template: 'hello' }],
-  ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')]
+  '/foo/bar',
+  '/baz/*',
+  [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }]
 ])
 
 const route = router.find(location.pathname)
@@ -147,8 +147,9 @@ const router = new Router([
     }
   */
 
+
   // resolve to a function
-  ['/resolve/to/function', () => { console.log('hello') }, { layout: 'main', requireLogin: true } ],
+  ['/resolve/to/function', () => { console.log('hello') }, { layout: 'main', requireLogin: true }],
   /*
     router.find('/resolve/to/function')
 
@@ -178,14 +179,22 @@ const router = new Router([
     }
   */
 
+
   // resolve to any type
-  ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')]
-
+  ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')],
   /*
-    Parameters
+    router.find('/in/fact/you/can/resolve/to/any/type')
 
-    Words begin with : will be resolved as parameters.
+    Returns: {
+      result: Symbol(hello),
+      params: {},
+      options: {},
+      origin: ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')]
+    }
   */
+
+
+  // Word begin with : will be resolved as parameters.
   ['/user/:id/profile', '/user/profile'],
   /*
     router.find('/user/123/profile')
@@ -202,7 +211,7 @@ const router = new Router([
 
 
   /*
-    Internally, ":key" will be converted to regular expression sub-pattern. So we can use $1~$9 to access them in result
+    Internally, ":key" will be converted to regular expression sub-pattern. So if result is String type, we can use $1~$9 to access them in its
   */
   ['/services/:controller/:method', '/service/$1'],
   /*
@@ -235,9 +244,7 @@ const router = new Router([
   */
 
 
-  /*
-    Wildcard
-  */
+  // * wildcard
   '/baz/*',
   /*
     Shorthand of ['/baz/*', '$&']
@@ -278,11 +285,9 @@ const router = new Router([
 ```
 
 ### router.find(path, method = 'ALL')
-Gives the path and method, returns a matched route.
+Return the route which matchs the path and method, or null if no route matched.
 
 #### Returns
-Matched route object, or `null` if no route matches.
-
 ```js
 {
   path,
@@ -292,13 +297,14 @@ Matched route object, or `null` if no route matches.
 }
 ```
 
-See Route Definition.
+See route definition for examples.
 
 
 ### Router.log
-Turn on log:
+Enable console log for debugging. Default is false.
 
 ```js
+// turn on log
 Router.log = true
 ```
 
