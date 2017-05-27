@@ -1,12 +1,12 @@
 class Router {
   constructor(conf) {
-    this.routes = {}
+    this._routes = {}
 
     if (conf.constructor === Array) conf = { ALL: conf }
 
     for (const method in conf) {
       const routes = conf[method]
-      const rts = this.routes[method] = {
+      const rts = this._routes[method] = {
         string: {},
         regex: []
       }
@@ -66,7 +66,7 @@ class Router {
   }
 
   find(path, method = 'ALL') {
-    const rts = this.routes[method]
+    const rts = this._routes[method]
 
     if (rts) {
       if (rts.string[path]) {

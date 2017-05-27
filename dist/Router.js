@@ -31,13 +31,13 @@
     function Router(conf) {
       _classCallCheck(this, Router);
 
-      this.routes = {};
+      this._routes = {};
 
       if (conf.constructor === Array) conf = { ALL: conf };
 
       for (var method in conf) {
         var routes = conf[method];
-        var rts = this.routes[method] = {
+        var rts = this._routes[method] = {
           string: {},
           regex: []
         };
@@ -117,7 +117,7 @@
     Router.prototype.find = function find(path) {
       var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'ALL';
 
-      var rts = this.routes[method];
+      var rts = this._routes[method];
 
       if (rts) {
         if (rts.string[path]) {
