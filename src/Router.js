@@ -12,26 +12,15 @@ class Router {
       }
 
       for (const _rt of routes) {
-        let path, result, params, options
-
-        if (_rt.constructor === String) {
-          path = _rt
-          result = '$&'
-          params = []
-          options = {}
-        } else {
-          const rt = _rt.concat() // clone, preserve original route
-          path = rt.shift()
-          result = rt.length ? rt.shift() : '$&'
-          options = typeof rt[rt.length - 1] === 'object' ? rt.pop() : {}
-          params = rt
-        }
+        const rt = [].concat(_rt)
+        const path = rt.shift()
+        const result = rt.shift() || '$&'
+        const options = rt.shift() || {}
 
         if (path.constructor === RegExp) {
           rts.regex.push({
             path,
             result,
-            params,
             options,
             origin: _rt
           })
@@ -43,9 +32,9 @@ class Router {
               origin: _rt
             }
           } else {
-            params = []
+            const params = []
 
-            path = path.replace(/[\\&()+.[?^{|]/g, '\\$&')
+            const regex = path.replace(/[\\&()+.[?^{|]/g, '\\$&')
               .replace(/:(\w+)/g, (str, key) => {
                 params.push(key)
                 return '([^/]+)'
@@ -53,7 +42,7 @@ class Router {
               .replace(/\*/g, '.*')
 
             rts.regex.push({
-              path: new RegExp(`^${path}$`),
+              path: new RegExp(`^${regex}$`),
               result,
               params,
               options,
@@ -95,10 +84,11 @@ class Router {
           }
 
           matches.shift()
-          for (let j = 0; j < rt.params.length; j++) {
-            if (rt.params[j]) {
-              params[rt.params[j]] = matches[j]
-            }
+
+          if (rt.params) {
+            rt.params.forEach((v, i) => params[v] = matches[i])
+          } else {
+            matches.forEach((v, i) => params[`$${i + 1}`] = v)
           }
 
           const match = {

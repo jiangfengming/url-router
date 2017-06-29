@@ -23,7 +23,7 @@
       ['/services/:controller/:method', '/service/$1'],
       '/foo/bar',
       '/baz/*',
-      [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }]
+      [/^\/article\/(\d+)$/, '/article', { layout: 'main' }]
     ])
 
     router.find('/path/from')

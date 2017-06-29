@@ -23,7 +23,7 @@ const router = new Router([
   ['/services/:controller/:method', '/service/$1'],
   '/foo/bar',
   '/baz/*',
-  [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }]
+  [/^\/article\/(\d+)$/, '/article', { layout: 'main' }]
 ])
 
 const route = router.find(location.pathname)
@@ -266,9 +266,9 @@ const router = new Router([
 
   /*
     path can be a regular expression.
-    The matched substrings will be set as params, the name of params are defined after result and before options.
+    The matched substrings will be set as params as $1, $2, ...
   */
-  [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }],
+  [/^\/article\/(\d+)$/, '/article', { layout: 'main' }],
   /*
     router.find('/article/123')
 
@@ -276,9 +276,9 @@ const router = new Router([
 
     {
       result: '/article',
-      params: { id: '123' },
+      params: { $1: '123' },
       options: { layout: 'main' },
-      origin: [/^\/article\/(\d+)$/, '/article', 'id', { layout: 'main' }]
+      origin: [/^\/article\/(\d+)$/, '/article', { layout: 'main' }]
     }
   */
 ])
