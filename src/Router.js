@@ -14,20 +14,20 @@ class Router {
       for (const _rt of routes) {
         const rt = [].concat(_rt)
         const path = rt.shift()
-        const result = rt.shift() || '$&'
+        const handler = rt.shift() || '$&'
         const options = rt.shift() || {}
 
         if (path.constructor === RegExp) {
           rts.regex.push({
             path,
-            result,
+            handler,
             options,
             origin: _rt
           })
         } else {
           if (!/:|\*|\$/.test(path)) {
             rts.string[path] = {
-              result: result === '$&' ? path : result,
+              handler: handler === '$&' ? path : handler,
               options,
               origin: _rt
             }
@@ -43,7 +43,7 @@ class Router {
 
             rts.regex.push({
               path: new RegExp(`^${regex}$`),
-              result,
+              handler,
               params,
               options,
               origin: _rt
@@ -60,7 +60,7 @@ class Router {
     if (rts) {
       if (rts.string[path]) {
         const match = {
-          result: rts.string[path].result,
+          handler: rts.string[path].handler,
           params: {},
           options: rts.string[path].options,
           origin: rts.string[path].origin
@@ -73,14 +73,14 @@ class Router {
         return match
       }
 
-      let result
+      let handler
       const params = {}
       for (const rt of rts.regex) {
         const matches = path.match(rt.path)
         if (matches) {
-          result = rt.result
-          if (result && result.constructor === String && result.indexOf('$') !== -1) {
-            result = result === '$&' ? path : path.replace(rt.path, result)
+          handler = rt.handler
+          if (handler && handler.constructor === String && handler.indexOf('$') !== -1) {
+            handler = handler === '$&' ? path : path.replace(rt.path, handler)
           }
 
           matches.shift()
@@ -92,7 +92,7 @@ class Router {
           }
 
           const match = {
-            result,
+            handler,
             params,
             options: rt.options,
             origin: rt.origin

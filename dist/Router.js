@@ -58,20 +58,20 @@
 
           var rt = [].concat(_rt);
           var path = rt.shift();
-          var result = rt.shift() || '$&';
+          var handler = rt.shift() || '$&';
           var options = rt.shift() || {};
 
           if (path.constructor === RegExp) {
             rts.regex.push({
               path: path,
-              result: result,
+              handler: handler,
               options: options,
               origin: _rt
             });
           } else {
             if (!/:|\*|\$/.test(path)) {
               rts.string[path] = {
-                result: result === '$&' ? path : result,
+                handler: handler === '$&' ? path : handler,
                 options: options,
                 origin: _rt
               };
@@ -86,7 +86,7 @@
 
                 rts.regex.push({
                   path: new RegExp('^' + regex + '$'),
-                  result: result,
+                  handler: handler,
                   params: params,
                   options: options,
                   origin: _rt
@@ -107,7 +107,7 @@
         var _ret2 = function () {
           if (rts.string[path]) {
             var match = {
-              result: rts.string[path].result,
+              handler: rts.string[path].handler,
               params: {},
               options: rts.string[path].options,
               origin: rts.string[path].origin
@@ -122,15 +122,15 @@
             };
           }
 
-          var result = void 0;
+          var handler = void 0;
           var params = {};
 
           var _loop = function _loop(rt) {
             var matches = path.match(rt.path);
             if (matches) {
-              result = rt.result;
-              if (result && result.constructor === String && result.indexOf('$') !== -1) {
-                result = result === '$&' ? path : path.replace(rt.path, result);
+              handler = rt.handler;
+              if (handler && handler.constructor === String && handler.indexOf('$') !== -1) {
+                handler = handler === '$&' ? path : path.replace(rt.path, handler);
               }
 
               matches.shift();
@@ -146,7 +146,7 @@
               }
 
               var _match = {
-                result: result,
+                handler: handler,
                 params: params,
                 options: rt.options,
                 origin: rt.origin

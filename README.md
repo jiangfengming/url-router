@@ -59,7 +59,7 @@ const router = new Router({
 http.createServer((req, res) => {
   const _url = url.parse(req.url)
   const route = router.find(_url.pathname, req.method)
-  route.result(req, res)
+  route.handler(req, res)
   // ...
 }).listen(8080)
 ```
@@ -127,10 +127,10 @@ const routes = {
 ```js
 const router = new Router([
   /*
-    Syntax: [path, result, options]
+    Syntax: [path, handler, options]
 
     path: String. The path to match against.
-    result: Any. The result.
+    handler: Any. The handler.
     options: Object. Optional. If set, it will be returned as 'matchedRoute.options' unchanged.
   */
   ['/path/from', '/resolve/to', { layout: 'main', requireLogin: true }],
@@ -140,7 +140,7 @@ const router = new Router([
     Returns:
 
     {
-      result: '/resolve/to',
+      handler: '/resolve/to',
       params: {},
       options: { layout: 'main', requireLogin: true },
       origin: ['/path/from', '/resolve/to', { layout: 'main', requireLogin: true }]
@@ -156,7 +156,7 @@ const router = new Router([
     Returns:
 
     {
-      result: () => { console.log('hello') },
+      handler: () => { console.log('hello') },
       params: {},
       options: { layout: 'main', requireLogin: true },
       origin: ['/resolve/to/function', () => { console.log('hello') }, { layout: 'main', requireLogin: true } ]
@@ -172,7 +172,7 @@ const router = new Router([
     Returns:
 
     {
-      result: { template: 'hello' },
+      handler: { template: 'hello' },
       params: {},
       options: { layout: 'main', requireLogin: true },
       origin: ['/resolve/to/object', { template: 'hello' }, { layout: 'main', requireLogin: true } ]
@@ -186,7 +186,7 @@ const router = new Router([
     router.find('/in/fact/you/can/resolve/to/any/type')
 
     Returns: {
-      result: Symbol(hello),
+      handler: Symbol(hello),
       params: {},
       options: {},
       origin: ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')]
@@ -202,7 +202,7 @@ const router = new Router([
     Returns:
 
     {
-      result: '/user/profile',
+      handler: '/user/profile',
       params: { id: 123 },
       options: {},
       origin: ['/user/:id/profile', '/user/profile'],
@@ -211,7 +211,7 @@ const router = new Router([
 
 
   /*
-    Internally, ":key" will be converted to regular expression sub-pattern. So if result is String type, we can use $1~$9 to access them in its
+    Internally, ":key" will be converted to regular expression sub-pattern. So if handler is String type, we can use $1~$9 to access them in its
   */
   ['/services/:controller/:method', '/service/$1'],
   /*
@@ -220,7 +220,7 @@ const router = new Router([
     Returns:
 
     {
-      result: '/services/article',
+      handler: '/services/article',
       params: { controller: 'article', method: 'create' },
       options: {},
       origin: ['/services/:controller/:method', '/service/$1']
@@ -236,7 +236,7 @@ const router = new Router([
     Returns:
 
     {
-      result: '/foo/bar',
+      handler: '/foo/bar',
       params: {},
       options: {},
       origin: '/foo/bar'
@@ -256,7 +256,7 @@ const router = new Router([
     Returns:
 
     {
-      result: '/baz/hello',
+      handler: '/baz/hello',
       params: {},
       options: {},
       origin: '/barz/*'
@@ -275,7 +275,7 @@ const router = new Router([
     Returns:
 
     {
-      result: '/article',
+      handler: '/article',
       params: { $1: '123' },
       options: { layout: 'main' },
       origin: [/^\/article\/(\d+)$/, '/article', { layout: 'main' }]
@@ -290,7 +290,7 @@ Return the route which matchs the path and method, or null if no route matched.
 #### Returns
 ```js
 {
-  path,
+  handler,
   params,
   options,
   origin
