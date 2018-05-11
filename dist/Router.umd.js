@@ -1,19 +1,8 @@
 (function (global, factory) {
-  if (typeof define === "function" && define.amd) {
-    define(['module', 'exports'], factory);
-  } else if (typeof exports !== "undefined") {
-    factory(module, exports);
-  } else {
-    var mod = {
-      exports: {}
-    };
-    factory(mod, mod.exports);
-    global.Router = mod.exports;
-  }
-})(this, function (module, exports) {
-  'use strict';
-
-  exports.__esModule = true;
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.Router = factory());
+}(this, (function () { 'use strict';
 
   var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
     return typeof obj;
@@ -21,15 +10,15 @@
     return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
   };
 
-  function _classCallCheck(instance, Constructor) {
+  var classCallCheck = function (instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
     }
-  }
+  };
 
   var Router = function () {
     function Router(conf) {
-      _classCallCheck(this, Router);
+      classCallCheck(this, Router);
 
       this._routes = {};
 
@@ -197,6 +186,6 @@
     return Router;
   }();
 
-  exports.default = Router;
-  module.exports = exports['default'];
-});
+  return Router;
+
+})));
