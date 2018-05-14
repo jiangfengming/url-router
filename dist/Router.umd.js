@@ -4,12 +4,6 @@
   (global.Router = factory());
 }(this, (function () { 'use strict';
 
-  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  };
-
   var classCallCheck = function (instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -17,20 +11,12 @@
   };
 
   var Router = function () {
-    function Router(conf) {
+    function Router(routes) {
       classCallCheck(this, Router);
 
       this._routes = {};
 
-      if (conf.constructor === Array) conf = { ALL: conf };
-
-      for (var method in conf) {
-        var routes = conf[method];
-        var rts = this._routes[method] = {
-          string: {},
-          regex: []
-        };
-
+      if (routes) {
         for (var _iterator = routes, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
           var _ref;
 
@@ -43,89 +29,122 @@
             _ref = _i.value;
           }
 
-          var _rt = _ref;
+          var route = _ref;
 
-          var rt = [].concat(_rt);
-          var path = rt.shift();
-          var handler = rt.shift() || '$&';
-          var options = rt.shift() || {};
-
-          if (path.constructor === RegExp) {
-            rts.regex.push({
-              path: path,
-              handler: handler,
-              options: options,
-              origin: _rt
-            });
-          } else {
-            if (!/:|\*|\$/.test(path)) {
-              rts.string[path] = {
-                handler: handler === '$&' ? path : handler,
-                options: options,
-                origin: _rt
-              };
-            } else {
-              (function () {
-                var params = [];
-
-                var regex = path.replace(/[\\&()+.[?^{|]/g, '\\$&').replace(/:(\w+)/g, function (str, key) {
-                  params.push(key);
-                  return '([^/]+)';
-                }).replace(/\*/g, '.*');
-
-                rts.regex.push({
-                  path: new RegExp('^' + regex + '$'),
-                  handler: handler,
-                  params: params,
-                  options: options,
-                  origin: _rt
-                });
-              })();
-            }
-          }
+          this.add.apply(this, route);
         }
       }
     }
 
-    Router.prototype.find = function find(path) {
-      var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'ALL';
+    Router.prototype.add = function add(method, path, handler, test) {
+      method = method.toUpperCase();
+      if (!this._routes[method]) this._routes[method] = [];
 
-      var rts = this._routes[method];
+      var table = this._routes[method];
 
-      if (rts) {
-        var _ret2 = function () {
-          if (rts.string[path]) {
-            var match = {
-              handler: rts.string[path].handler,
-              params: {},
-              options: rts.string[path].options,
-              origin: rts.string[path].origin
-            };
+      if (path.constructor === RegExp) {
+        table.push({
+          path: path,
+          regex: path,
+          handler: handler,
+          test: test
+        });
+      } else {
+        if (!/:|\*|\$/.test(path)) {
+          table.push({
+            path: path,
+            handler: handler,
+            test: test
+          });
+        } else {
+          var params = [];
 
-            if (Router.log) {
-              console.log('path:', path, '\n', 'method:', method, '\n', 'match:', match); // eslint-disable-line
-            }
+          var regex = path.replace(/[\\&()+.[?^{|]/g, '\\$&').replace(/:(\w+)/g, function (str, key) {
+            params.push(key);
+            return '([^/]+)';
+          }).replace(/\*/g, '.*');
 
-            return {
-              v: match
-            };
-          }
+          table.push({
+            path: path,
+            regex: new RegExp('^' + regex + '$'),
+            handler: handler,
+            params: params,
+            test: test
+          });
+        }
+      }
+    };
 
-          var handler = void 0;
-          var params = {};
+    Router.prototype.get = function get$$1(path, handler, test) {
+      return this.add('GET', path, handler, test);
+    };
 
-          var _loop = function _loop(rt) {
-            var matches = path.match(rt.path);
+    Router.prototype.post = function post(path, handler, test) {
+      return this.add('POST', path, handler, test);
+    };
+
+    Router.prototype.put = function put(path, handler, test) {
+      return this.add('PUT', path, handler, test);
+    };
+
+    Router.prototype.delete = function _delete(path, handler, test) {
+      return this.add('DELETE', path, handler, test);
+    };
+
+    Router.prototype.head = function head(path, handler, test) {
+      return this.add('HEAD', path, handler, test);
+    };
+
+    Router.prototype.connect = function connect(path, handler, test) {
+      return this.add('CONNECT', path, handler, test);
+    };
+
+    Router.prototype.options = function options(path, handler, test) {
+      return this.add('OPTIONS', path, handler, test);
+    };
+
+    Router.prototype.trace = function trace(path, handler, test) {
+      return this.add('TRACE', path, handler, test);
+    };
+
+    Router.prototype.patch = function patch(path, handler, test) {
+      return this.add('PATCH', path, handler, test);
+    };
+
+    Router.prototype.find = function find(method, path, testArg) {
+      method = method.toUpperCase();
+      var table = this._routes[method];
+
+      for (var _iterator2 = table, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
+        var _ref2;
+
+        if (_isArray2) {
+          if (_i2 >= _iterator2.length) break;
+          _ref2 = _iterator2[_i2++];
+        } else {
+          _i2 = _iterator2.next();
+          if (_i2.done) break;
+          _ref2 = _i2.value;
+        }
+
+        var route = _ref2;
+
+        var resolved = void 0;
+
+        if (route.regex) {
+          (function () {
+            var matches = path.match(route.regex);
             if (matches) {
-              handler = rt.handler;
-              if (handler && handler.constructor === String && handler.indexOf('$') !== -1) {
-                handler = handler === '$&' ? path : path.replace(rt.path, handler);
+              var handler = route.handler;
+              if (handler.constructor === String && handler.includes('$')) {
+                handler = handler === '$&' ? path : path.replace(route.regex, handler);
               }
 
               matches.shift();
+              var params = {};
 
-              if (rt.params) {
-                rt.params.forEach(function (v, i) {
+              if (route.params) {
+                route.params.forEach(function (v, i) {
                   return params[v] = matches[i];
                 });
               } else {
@@ -134,53 +153,29 @@
                 });
               }
 
-              var _match = {
+              resolved = {
+                method: method,
+                path: path,
                 handler: handler,
-                params: params,
-                options: rt.options,
-                origin: rt.origin
-              };
-
-              if (Router.log) {
-                console.log('path:', path, '\n', 'method:', method, '\n', 'match:', _match); // eslint-disable-line
-              }
-
-              return {
-                v: {
-                  v: _match
-                }
+                params: params
               };
             }
-          };
-
-          for (var _iterator2 = rts.regex, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
-            var _ref2;
-
-            if (_isArray2) {
-              if (_i2 >= _iterator2.length) break;
-              _ref2 = _iterator2[_i2++];
-            } else {
-              _i2 = _iterator2.next();
-              if (_i2.done) break;
-              _ref2 = _i2.value;
-            }
-
-            var rt = _ref2;
-
-            var _ret3 = _loop(rt);
-
-            if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object") return _ret3.v;
+          })();
+        } else {
+          if (route.path === path) {
+            resolved = {
+              method: method,
+              path: path,
+              handler: route.handler,
+              params: {}
+            };
           }
-        }();
+        }
 
-        if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+        if (resolved && (!route.test || route.test(resolved, testArg))) {
+          return resolved;
+        }
       }
-
-      if (Router.log) {
-        console.log('path:', path, '\n', 'method:', method, '\n', 'match:', null); // eslint-disable-line
-      }
-
-      return method === 'ALL' ? null : this.match(path);
     };
 
     return Router;

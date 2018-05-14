@@ -1,10 +1,11 @@
-# Router
-A URL router library.
+# url-router
+
+A non-opinionated cross-platform URL routing library.
 
 ## Installing
 
 ```
-npm install url-router --save
+npm install url-router
 ```
 
 ## Examples
@@ -15,18 +16,13 @@ npm install url-router --save
 import Router from 'url-router'
 
 const router = new Router([
-  ['/path/from', '/resolve/to', { layout: 'main' }],
-  ['/resolve/to/function', () => { console.log('hello') }],
-  ['/resolve/to/object', { template: 'hello' }],
-  ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')],
-  ['/user/:id/profile', '/user/profile'],
-  ['/services/:controller/:method', '/service/$1'],
-  '/foo/bar',
-  '/baz/*',
-  [/^\/article\/(\d+)$/, '/article', { layout: 'main' }]
+  ['GET', '/', () => import('./views/Homepage')],
+  ['GET', '/user/:id/profile', () => import('./views/UserProfile')],
+  ['GET', /^\/article\/(\d+)$/, () => import('./views/Article')]
 ])
 
 const route = router.find(location.pathname)
+route.handler(route)
 ```
 
 ### node.js:
@@ -34,280 +30,163 @@ const route = router.find(location.pathname)
 ```js
 const http = require('http')
 const Router = require('url-router')
-const url = require('url')
+const { URL } = require('url')
 
 const ArticleController = require('./controllers/article')
 
-const router = new Router({
-  GET: [
-    ['/article/:id', ArticleController.get]
-  ],
-
-  POST: [
-    ['/article', ArticleController.create]
-  ],
-
-  PUT: [
-    ['/article/:id', ArticleController.update]
-  ],
-
-  DELETE: [
-    ['/article/:id', ArticleController.remove]
-  ]
-})
+const router = new Router([
+  ['GET','/article/:id', ArticleController.get],
+  ['POST', '/article', ArticleController.create],
+  ['PUT', '/article/:id', ArticleController.update],
+  ['DELETE', '/article/:id', ArticleController.remove],
+])
 
 http.createServer((req, res) => {
-  const _url = url.parse(req.url)
-  const route = router.find(_url.pathname, req.method)
-  route.handler(req, res)
-  // ...
+  const url = new URL(req.url)
+  const route = router.find(req.method, url.pathname)
+  route.handler({ req, res, route })
 }).listen(8080)
 ```
 
 ## API
 
 ### new Router(routes)
-Create a router.
 
-#### Routes Definition:
+Creates a router instance.
 
-```js
-const routes = {
-  GET: [
-    route,
-    ...
-  ],
+Params:  
+`routes`: Array. An array of routes.
 
-  POST: [
-    route,
-    ...
-  ],
-
-  PUT: [
-    route,
-    ...
-  ],
-
-  DELETE: [
-    route,
-    ...
-  ],
-
-  ALL: [
-    route,
-    ...
-  ]
-}
-```
-
-Routes are grouped by different HTTP methods. Routes in group `ALL` will be checked by all requests regardless of method.
-
-In the browser-side, there's no need to distinguish HTTP methods, we can simply write:
+route signature:
 
 ```js
-const routes = [
-  route,
+new Router([
+  [method, path, handler, test],
   ...
-]
-```
-
-It's a shorthand of
-
-```js
-const routes = {
-  ALL: [
-    route,
-    ...
-  ]
-}
-```
-
-#### Route Definition
-
-```js
-const router = new Router([
-  /*
-    Syntax: [path, handler, options]
-
-    path: String. The path to match against.
-    handler: Any. The handler.
-    options: Object. Optional. If set, it will be returned as 'matchedRoute.options' unchanged.
-  */
-  ['/path/from', '/resolve/to', { layout: 'main', requireLogin: true }],
-  /*
-    router.find('/path/from')
-
-    Returns:
-
-    {
-      handler: '/resolve/to',
-      params: {},
-      options: { layout: 'main', requireLogin: true },
-      origin: ['/path/from', '/resolve/to', { layout: 'main', requireLogin: true }]
-    }
-  */
-
-
-  // resolve to a function
-  ['/resolve/to/function', () => { console.log('hello') }, { layout: 'main', requireLogin: true }],
-  /*
-    router.find('/resolve/to/function')
-
-    Returns:
-
-    {
-      handler: () => { console.log('hello') },
-      params: {},
-      options: { layout: 'main', requireLogin: true },
-      origin: ['/resolve/to/function', () => { console.log('hello') }, { layout: 'main', requireLogin: true } ]
-    }
-  */
-
-
-  // resolve to an object
-  ['/resolve/to/object', { template: 'hello' }, { layout: 'main', requireLogin: true } ],
-  /*
-    router.find('/resolve/to/object')
-
-    Returns:
-
-    {
-      handler: { template: 'hello' },
-      params: {},
-      options: { layout: 'main', requireLogin: true },
-      origin: ['/resolve/to/object', { template: 'hello' }, { layout: 'main', requireLogin: true } ]
-    }
-  */
-
-
-  // resolve to any type
-  ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')],
-  /*
-    router.find('/in/fact/you/can/resolve/to/any/type')
-
-    Returns: {
-      handler: Symbol(hello),
-      params: {},
-      options: {},
-      origin: ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')]
-    }
-  */
-
-
-  // Word begin with : will be resolved as parameters.
-  ['/user/:id/profile', '/user/profile'],
-  /*
-    router.find('/user/123/profile')
-
-    Returns:
-
-    {
-      handler: '/user/profile',
-      params: { id: 123 },
-      options: {},
-      origin: ['/user/:id/profile', '/user/profile'],
-    }
-  */
-
-
-  /*
-    Internally, ":key" will be converted to regular expression sub-pattern. So if handler is String type, we can use $1~$9 to access them in its
-  */
-  ['/services/:controller/:method', '/service/$1'],
-  /*
-    router.find('/services/article/create')
-
-    Returns:
-
-    {
-      handler: '/services/article',
-      params: { controller: 'article', method: 'create' },
-      options: {},
-      origin: ['/services/:controller/:method', '/service/$1']
-    }
-  */
-
-
-  // Shorthand of [path, '$&']. '$&' means keep the path unchanged.
-  '/foo/bar',
-  /*
-    router.match('/foo/bar')
-
-    Returns:
-
-    {
-      handler: '/foo/bar',
-      params: {},
-      options: {},
-      origin: '/foo/bar'
-    }
-  */
-
-
-  // * wildcard
-  '/baz/*',
-  /*
-    Shorthand of ['/baz/*', '$&']
-
-    This route will match all paths begin with '/baz/'.
-
-    router.match('/baz/hello')
-
-    Returns:
-
-    {
-      handler: '/baz/hello',
-      params: {},
-      options: {},
-      origin: '/barz/*'
-    }
-  */
-
-
-  /*
-    path can be a regular expression.
-    The matched substrings will be set as params as $1, $2, ...
-  */
-  [/^\/article\/(\d+)$/, '/article', { layout: 'main' }],
-  /*
-    router.find('/article/123')
-
-    Returns:
-
-    {
-      handler: '/article',
-      params: { $1: '123' },
-      options: { layout: 'main' },
-      origin: [/^\/article\/(\d+)$/, '/article', { layout: 'main' }]
-    }
-  */
 ])
 ```
 
-### router.find(path, method = 'ALL')
-Return the route which matchs the path and method, or null if no route matched.
 
-#### Returns
+#### method
+
+String. HTTP method. 'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'.  
+
+
+#### path
+
+String | Regexp. The path to match against the request path.
+`path` is the `pathname` of [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL),
+that is, without query string and hash segment.
+
+You could define route params in a string `path`, for example:
+
+```
+route path: /people/:username/articles/:articleId
+request: /people/johnsmith/articles/123
+params: { username: 'johnsmith', articleId: '123' }
+```
+
+`*` is wildcard, e.g., route path `/foo*bar` can match `/foowwsdfbar`.
+
+If you need more power, use Regexp. Capturing groups will be set as route params, keys are `$1, $2, ...`.
+
+```
+route path: /^\/article\/(\d+)$/
+request: /article/123
+params: { $1: '123' }
+```
+
+
+#### handler
+
+Any type. The handler you wish to handle the request.
+Based on your framework design, the handler can be a function to resolve the request,
+or the file path to your controller file, or an object with various options.
+
+If `handler` is a string and contains `$` character, and `path` is a regexp (string with route params and wildcard will be converted to regexp underlying), the `handler` will be rewitten. For example:
+
+```
+route path: /people/:username/:page
+handler: /people/$2
+request: /people/johnsmith/articles
+
+result: { handler: '/people/articles', params: { username: 'johnsmith', page: 'articles' } }
+```
+
+The rewrite formula is
 ```js
-{
-  handler,
-  params,
-  options,
-  origin
+routeHandler = requestPath.replace(routePath, routeHandler)
+```
+
+The route params will be converted to capturing groups, so can be accessed by `$1, $2, ...`.
+
+
+#### test
+
+Function. Optional. Your custom test function to test against the request.
+If test function is defined, the route will be matched only if
+1. The request path is matched with route's path
+2. The test function is passed (return true)
+
+Function signature:
+
+```js
+function test(matchedRoute, testArg) {
+  // should return true or false
 }
 ```
 
-See route definition for examples.
-
-
-### Router.log
-Enable console log for debugging. Default is false.
+`matchedRoute`: Object.
 
 ```js
-// turn on log
-Router.log = true
+{
+  method,
+  path,
+  handler,
+  params
+}
 ```
 
+`testArg`: Arguments passed by `router.find()`.
+
+
+### router.add(method, path, handler, test)
+
+Adds a route to route table.
+
+Every HTTP method has a shortcut alias:
+
+```js
+router.get(path, handler, test)
+router.post(path, handler, test)
+router.put(path, handler, test)
+router.delete(path, handler, test)
+router.head(path, handler, test)
+router.connect(path, handler, test)
+router.options(path, handler, test)
+router.trace(path, handler, test)
+router.patch(path, handler, test)
+```
+
+
+### router.find(method, path, testArg)
+
+Finds the route which matches the method and path, and passes the test function if thers is one, or `undefined` if no route matches.
+
+Params:  
+`method`: String. The request method.  
+`path`: String. The request method.  
+`testArg`: Any. Argument provides to route test function.
+
+Returns: 
+```js
+{
+  method,
+  path,
+  handler,
+  params
+}
+```
 
 ## License
 [MIT](LICENSE)

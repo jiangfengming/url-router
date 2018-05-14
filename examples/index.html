@@ -1,84 +1,33 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta charset="utf-8" />
-  <script src="../dist/Router.umd.js"></script>
+<meta charset="utf-8" />
+<script src="../dist/Router.umd.js"></script>
 </head>
 
 <body>
-  <p>Open console to see results.</p>
+<p>Open console to see results.</p>
 
-  <script>
-    // turn on log
-    Router.log = true
+<script>
+const router = new Router([
+  ['GET', '/path/from', '/resolve/to'],
+  ['POST', '/resolve/to/function', () => { console.log('hello') }],
+  ['PUT', '/resolve/to/object', { template: '<h1>hello</h1>', layout: 'main' }],
+  ['GET', '/user/:id/profile', '/user/profile'],
+  ['GET', '/people/:username/:page', '/people/$2'],
+  ['GET', /^\/article\/(\d+)$/, '/article']
+])
 
-    // in browser
-    let router = new Router([
-      ['/path/from', '/resolve/to', { layout: 'main' }],
-      ['/resolve/to/function', () => { console.log('hello') }],
-      ['/resolve/to/object', { template: 'hello' }],
-      ['/in/fact/you/can/resolve/to/any/type', Symbol('hello')],
-      ['/user/:id/profile', '/user/profile'],
-      ['/services/:controller/:method', '/service/$1'],
-      '/foo/bar',
-      '/baz/*',
-      [/^\/article\/(\d+)$/, '/article', { layout: 'main' }]
-    ])
+router.get( '*', { template: '<h1>404</h1>' })
 
-    router.find('/path/from')
-    router.find('/resolve/to/function')
-    router.find('/resolve/to/object')
-    router.find('/in/fact/you/can/resolve/to/any/type')
-    router.find('/user/123/profile')
-    router.find('/services/article/create')
-    router.find('/article/123')
-    router.find('/foo/bar')
-    router.find('/baz/hello')
-
-
-    // in Node.js
-    const ArticleController = {
-      get(req, res) {
-        // ...
-      },
-
-      create(req, res) {
-        // ...
-      },
-
-      update(req, res) {
-        // ...
-      },
-
-      remove(req, res) {
-        // ...
-      }
-    }
-
-    router = new Router({
-      GET: [
-        ['/article/:id', ArticleController.get]
-      ],
-
-      POST: [
-        ['/article', ArticleController.create]
-      ],
-
-      PUT: [
-        ['/article/:id', ArticleController.update]
-      ],
-
-      DELETE: [
-        ['/article/:id', ArticleController.remove]
-      ]
-    })
-
-    router.find('/article/123', 'GET')
-    router.find('/article', 'POST')
-    router.find('/article/123', 'PUT')
-    router.find('/article/123', 'DELETE')
-  </script>
+console.log(router.find('GET', '/path/from'))
+console.log(router.find('POST', '/resolve/to/function'))
+console.log(router.find('PUT', '/resolve/to/object'))
+console.log(router.find('GET', '/user/123/profile'))
+console.log(router.find('GET', '/people/johnsmith/articles'))
+console.log(router.find('GET', '/article/123'))
+console.log(router.find('GET', '/404'))
+</script>
 </body>
 
 </html>

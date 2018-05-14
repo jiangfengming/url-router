@@ -1,117 +1,137 @@
 class Router {
-  constructor(conf) {
+  constructor(routes) {
     this._routes = {}
 
-    if (conf.constructor === Array) conf = { ALL: conf }
-
-    for (const method in conf) {
-      const routes = conf[method]
-      const rts = this._routes[method] = {
-        string: {},
-        regex: []
-      }
-
-      for (const _rt of routes) {
-        const rt = [].concat(_rt)
-        const path = rt.shift()
-        const handler = rt.shift() || '$&'
-        const options = rt.shift() || {}
-
-        if (path.constructor === RegExp) {
-          rts.regex.push({
-            path,
-            handler,
-            options,
-            origin: _rt
-          })
-        } else {
-          if (!/:|\*|\$/.test(path)) {
-            rts.string[path] = {
-              handler: handler === '$&' ? path : handler,
-              options,
-              origin: _rt
-            }
-          } else {
-            const params = []
-
-            const regex = path.replace(/[\\&()+.[?^{|]/g, '\\$&')
-              .replace(/:(\w+)/g, (str, key) => {
-                params.push(key)
-                return '([^/]+)'
-              })
-              .replace(/\*/g, '.*')
-
-            rts.regex.push({
-              path: new RegExp(`^${regex}$`),
-              handler,
-              params,
-              options,
-              origin: _rt
-            })
-          }
-        }
+    if (routes) {
+      for (const route of routes) {
+        this.add(...route)
       }
     }
   }
 
-  find(path, method = 'ALL') {
-    const rts = this._routes[method]
+  add(method, path, handler, test) {
+    method = method.toUpperCase()
+    if (!this._routes[method]) this._routes[method] = []
 
-    if (rts) {
-      if (rts.string[path]) {
-        const match = {
-          handler: rts.string[path].handler,
-          params: {},
-          options: rts.string[path].options,
-          origin: rts.string[path].origin
-        }
+    const table = this._routes[method]
 
-        if (Router.log) {
-          console.log('path:', path, '\n', 'method:', method, '\n', 'match:', match) // eslint-disable-line
-        }
+    if (path.constructor === RegExp) {
+      table.push({
+        path,
+        regex: path,
+        handler,
+        test
+      })
+    } else {
+      if (!/:|\*|\$/.test(path)) {
+        table.push({
+          path,
+          handler,
+          test
+        })
+      } else {
+        const params = []
 
-        return match
+        const regex = path.replace(/[\\&()+.[?^{|]/g, '\\$&')
+          .replace(/:(\w+)/g, (str, key) => {
+            params.push(key)
+            return '([^/]+)'
+          })
+          .replace(/\*/g, '.*')
+
+        table.push({
+          path,
+          regex: new RegExp(`^${regex}$`),
+          handler,
+          params,
+          test
+        })
       }
+    }
+  }
 
-      let handler
-      const params = {}
-      for (const rt of rts.regex) {
-        const matches = path.match(rt.path)
+  get(path, handler, test) {
+    return this.add('GET', path, handler, test)
+  }
+
+  post(path, handler, test) {
+    return this.add('POST', path, handler, test)
+  }
+
+  put(path, handler, test) {
+    return this.add('PUT', path, handler, test)
+  }
+
+  delete(path, handler, test) {
+    return this.add('DELETE', path, handler, test)
+  }
+
+  head(path, handler, test) {
+    return this.add('HEAD', path, handler, test)
+  }
+
+  connect(path, handler, test) {
+    return this.add('CONNECT', path, handler, test)
+  }
+
+  options(path, handler, test) {
+    return this.add('OPTIONS', path, handler, test)
+  }
+
+  trace(path, handler, test) {
+    return this.add('TRACE', path, handler, test)
+  }
+
+  patch(path, handler, test) {
+    return this.add('PATCH', path, handler, test)
+  }
+
+  find(method, path, testArg) {
+    method = method.toUpperCase()
+    const table = this._routes[method]
+
+    for (const route of table) {
+      let resolved
+
+      if (route.regex) {
+        const matches = path.match(route.regex)
         if (matches) {
-          handler = rt.handler
-          if (handler && handler.constructor === String && handler.indexOf('$') !== -1) {
-            handler = handler === '$&' ? path : path.replace(rt.path, handler)
+          let handler = route.handler
+          if (handler.constructor === String && handler.includes('$')) {
+            handler = handler === '$&' ? path : path.replace(route.regex, handler)
           }
 
           matches.shift()
+          const params = {}
 
-          if (rt.params) {
-            rt.params.forEach((v, i) => params[v] = matches[i])
+          if (route.params) {
+            route.params.forEach((v, i) => params[v] = matches[i])
           } else {
-            matches.forEach((v, i) => params[`$${i + 1}`] = v)
+            matches.forEach((v, i) => params['$' + (i + 1)] = v)
           }
 
-          const match = {
+          resolved = {
+            method,
+            path,
             handler,
-            params,
-            options: rt.options,
-            origin: rt.origin
+            params
           }
-
-          if (Router.log) {
-            console.log('path:', path, '\n', 'method:', method, '\n', 'match:', match) // eslint-disable-line
+        }
+      } else {
+        if (route.path === path) {
+          resolved = {
+            method,
+            path,
+            handler: route.handler,
+            params: {}
           }
-
-          return match
         }
       }
-    }
 
-    if (Router.log) {
-      console.log('path:', path, '\n', 'method:', method, '\n', 'match:', null) // eslint-disable-line
+      if (resolved && (!route.test || route.test(resolved, testArg))) {
+        return resolved
+      }
     }
-
-    return method === 'ALL' ? null : this.match(path)
   }
 }
 
