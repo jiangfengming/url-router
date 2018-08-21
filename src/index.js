@@ -132,6 +132,8 @@ class Router {
         return resolved
       }
     }
+
+    return null
   }
 }
 

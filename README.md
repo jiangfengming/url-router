@@ -171,7 +171,7 @@ router.patch(path, handler, test)
 
 ### router.find(method, path, testArg)
 
-Finds the route which matches the method and path, and passes the test function if thers is one, or `undefined` if no route matches.
+Finds the route which matches the method and path, and passes the test function if thers is one, or `null` if no route matches.
 
 Params:  
 `method`: String. The request method.  

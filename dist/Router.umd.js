@@ -4,16 +4,10 @@
   (global.Router = factory());
 }(this, (function () { 'use strict';
 
-  var classCallCheck = function (instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  };
-
-  var Router = function () {
+  var Router =
+  /*#__PURE__*/
+  function () {
     function Router(routes) {
-      classCallCheck(this, Router);
-
       this._routes = {};
 
       if (routes) {
@@ -30,16 +24,16 @@
           }
 
           var route = _ref;
-
           this.add.apply(this, route);
         }
       }
     }
 
-    Router.prototype.add = function add(method, path, handler, test) {
+    var _proto = Router.prototype;
+
+    _proto.add = function add(method, path, handler, test) {
       method = method.toUpperCase();
       if (!this._routes[method]) this._routes[method] = [];
-
       var table = this._routes[method];
 
       if (path.constructor === RegExp) {
@@ -58,15 +52,13 @@
           });
         } else {
           var params = [];
-
           var regex = path.replace(/[\\&()+.[?^{|]/g, '\\$&').replace(/:(\w+)/g, function (str, key) {
             params.push(key);
             return '([^/]+)';
           }).replace(/\*/g, '.*');
-
           table.push({
             path: path,
-            regex: new RegExp('^' + regex + '$'),
+            regex: new RegExp("^" + regex + "$"),
             handler: handler,
             params: params,
             test: test
@@ -75,43 +67,43 @@
       }
     };
 
-    Router.prototype.get = function get$$1(path, handler, test) {
+    _proto.get = function get(path, handler, test) {
       return this.add('GET', path, handler, test);
     };
 
-    Router.prototype.post = function post(path, handler, test) {
+    _proto.post = function post(path, handler, test) {
       return this.add('POST', path, handler, test);
     };
 
-    Router.prototype.put = function put(path, handler, test) {
+    _proto.put = function put(path, handler, test) {
       return this.add('PUT', path, handler, test);
     };
 
-    Router.prototype.delete = function _delete(path, handler, test) {
+    _proto.delete = function _delete(path, handler, test) {
       return this.add('DELETE', path, handler, test);
     };
 
-    Router.prototype.head = function head(path, handler, test) {
+    _proto.head = function head(path, handler, test) {
       return this.add('HEAD', path, handler, test);
     };
 
-    Router.prototype.connect = function connect(path, handler, test) {
+    _proto.connect = function connect(path, handler, test) {
       return this.add('CONNECT', path, handler, test);
     };
 
-    Router.prototype.options = function options(path, handler, test) {
+    _proto.options = function options(path, handler, test) {
       return this.add('OPTIONS', path, handler, test);
     };
 
-    Router.prototype.trace = function trace(path, handler, test) {
+    _proto.trace = function trace(path, handler, test) {
       return this.add('TRACE', path, handler, test);
     };
 
-    Router.prototype.patch = function patch(path, handler, test) {
+    _proto.patch = function patch(path, handler, test) {
       return this.add('PATCH', path, handler, test);
     };
 
-    Router.prototype.find = function find(method, path, testArg) {
+    _proto.find = function find(method, path, testArg) {
       method = method.toUpperCase();
       var table = this._routes[method];
 
@@ -128,14 +120,15 @@
         }
 
         var route = _ref2;
-
         var resolved = void 0;
 
         if (route.regex) {
           (function () {
             var matches = path.match(route.regex);
+
             if (matches) {
               var handler = route.handler;
+
               if (handler.constructor === String && handler.includes('$')) {
                 handler = handler === '$&' ? path : path.replace(route.regex, handler);
               }
@@ -176,6 +169,8 @@
           return resolved;
         }
       }
+
+      return null;
     };
 
     return Router;
