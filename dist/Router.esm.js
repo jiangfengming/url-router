@@ -26,6 +26,16 @@ function () {
   var _proto = Router.prototype;
 
   _proto.add = function add(method, path, handler, test) {
+    // method is omitted
+    // defaults to 'GET'
+    if (method.constructor !== String || method[0] === '/') {
+      var _ref2 = ['GET', method, path, handler];
+      method = _ref2[0];
+      path = _ref2[1];
+      handler = _ref2[2];
+      test = _ref2[3];
+    }
+
     method = method.toUpperCase();
     if (!this._routes[method]) this._routes[method] = [];
     var table = this._routes[method];
@@ -98,22 +108,31 @@ function () {
   };
 
   _proto.find = function find(method, path, testArg) {
+    // method is omitted
+    // defaults to 'GET'
+    if (method.constructor !== String || method[0] === '/') {
+      var _ref3 = ['GET', method, path];
+      method = _ref3[0];
+      path = _ref3[1];
+      testArg = _ref3[2];
+    }
+
     method = method.toUpperCase();
     var table = this._routes[method];
 
     for (var _iterator2 = table, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
-      var _ref2;
+      var _ref4;
 
       if (_isArray2) {
         if (_i2 >= _iterator2.length) break;
-        _ref2 = _iterator2[_i2++];
+        _ref4 = _iterator2[_i2++];
       } else {
         _i2 = _iterator2.next();
         if (_i2.done) break;
-        _ref2 = _i2.value;
+        _ref4 = _i2.value;
       }
 
-      var route = _ref2;
+      var route = _ref4;
       var resolved = void 0;
 
       if (route.regex) {

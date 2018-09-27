@@ -13,20 +13,22 @@ const router = new Router([
   ['GET', '/path/from', '/resolve/to'],
   ['POST', '/resolve/to/function', () => { console.log('hello') }],
   ['PUT', '/resolve/to/object', { template: '<h1>hello</h1>', layout: 'main' }],
-  ['GET', '/user/:id/profile', '/user/profile'],
-  ['GET', '/people/:username/:page', '/people/$2'],
-  ['GET', /^\/article\/(\d+)$/, '/article']
+
+  // method defaults to 'GET'
+  ['/user/:id/profile', '/user/profile'],
+  ['/people/:username/:page', '/people/$2'],
+  [/^\/article\/(\d+)$/, '/article']
 ])
 
-router.get( '*', { template: '<h1>404</h1>' })
+router.get('*', { template: '<h1>404</h1>' })
 
 console.log(router.find('GET', '/path/from'))
 console.log(router.find('POST', '/resolve/to/function'))
 console.log(router.find('PUT', '/resolve/to/object'))
-console.log(router.find('GET', '/user/123/profile'))
-console.log(router.find('GET', '/people/johnsmith/articles'))
-console.log(router.find('GET', '/article/123'))
-console.log(router.find('GET', '/404'))
+console.log(router.find('/user/123/profile'))
+console.log(router.find('/people/johnsmith/articles'))
+console.log(router.find('/article/123'))
+console.log(router.find('/404'))
 </script>
 </body>
 

@@ -16,9 +16,9 @@ npm install url-router
 import Router from 'url-router'
 
 const router = new Router([
-  ['GET', '/', () => import('./views/Homepage')],
-  ['GET', '/user/:id/profile', () => import('./views/UserProfile')],
-  ['GET', /^\/article\/(\d+)$/, () => import('./views/Article')]
+  ['/', () => import('./views/Homepage')],
+  ['/user/:id/profile', () => import('./views/UserProfile')],
+  [/^\/article\/(\d+)$/, () => import('./views/Article')]
 ])
 
 const route = router.find(location.pathname)
@@ -32,13 +32,13 @@ const http = require('http')
 const Router = require('url-router')
 const { URL } = require('url')
 
-const ArticleController = require('./controllers/article')
+const article = require('./controllers/article')
 
 const router = new Router([
-  ['GET','/article/:id', ArticleController.get],
-  ['POST', '/article', ArticleController.create],
-  ['PUT', '/article/:id', ArticleController.update],
-  ['DELETE', '/article/:id', ArticleController.remove],
+  ['GET','/article/:id', article.get],
+  ['POST', '/article', article.create],
+  ['PUT', '/article/:id', article.update],
+  ['DELETE', '/article/:id', article.remove],
 ])
 
 http.createServer((req, res) => {
@@ -69,8 +69,8 @@ new Router([
 
 #### method
 
-String. HTTP method. 'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'.  
-
+String. Optional. HTTP method. `GET`, `POST`, `PUT`, `DELETE`, `HEAD`, `CONNECT`, `OPTIONS`, `TRACE`, `PATCH`.  
+If `method` is omitted, it defaults to `GET`.
 
 #### path
 
@@ -154,6 +154,8 @@ function test(matchedRoute, testArg) {
 
 Adds a route to route table.
 
+`method` is optional, it defaults to `GET`.
+
 Every HTTP method has a shortcut alias:
 
 ```js
@@ -174,9 +176,9 @@ router.patch(path, handler, test)
 Finds the route which matches the method and path, and passes the test function if thers is one, or `null` if no route matches.
 
 Params:  
-`method`: String. The request method.  
+`method`: String. Optional. The request method. If omitted, defaults to `GET`.  
 `path`: String. The request method.  
-`testArg`: Any. Argument provides to route test function.
+`testArg`: Any. Optional. Argument provides to route test function.
 
 Returns: 
 ```js

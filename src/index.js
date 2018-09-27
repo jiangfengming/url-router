@@ -10,6 +10,12 @@ class Router {
   }
 
   add(method, path, handler, test) {
+    // method is omitted
+    // defaults to 'GET'
+    if (method.constructor !== String || method[0] === '/') {
+      [method, path, handler, test] = ['GET', method, path, handler]
+    }
+
     method = method.toUpperCase()
     if (!this._routes[method]) this._routes[method] = []
 
@@ -87,6 +93,12 @@ class Router {
   }
 
   find(method, path, testArg) {
+    // method is omitted
+    // defaults to 'GET'
+    if (method.constructor !== String || method[0] === '/') {
+      [method, path, testArg] = ['GET', method, path]
+    }
+
     method = method.toUpperCase()
     const table = this._routes[method]
 
