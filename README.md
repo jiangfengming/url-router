@@ -18,7 +18,10 @@ import Router from 'url-router'
 const router = new Router([
   ['/', () => import('./views/Homepage')],
   ['/user/:id/profile', () => import('./views/UserProfile')],
-  [/^\/article\/(\d+)$/, () => import('./views/Article')]
+  [/^\/article\/(\d+)$/, () => import('./views/Article')],
+
+  // es2018 named capture groups
+  [/^\/post\/(?<id>\d+)$/, () => import('./views/Post')]
 ])
 
 const route = router.find(location.pathname)
@@ -61,56 +64,103 @@ route signature:
 
 ```js
 new Router([
-  [method, path, handler, test],
+  [method?, path, handler, test?],
   ...
 ])
 ```
 
-
 #### method
-
 String. Optional. HTTP method. `GET`, `POST`, `PUT`, `DELETE`, `HEAD`, `CONNECT`, `OPTIONS`, `TRACE`, `PATCH`.  
 If `method` is omitted, it defaults to `GET`.
 
 #### path
-
 String | Regexp. The path to match against the request path.
-`path` is the `pathname` of [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL),
-that is, without query string and hash segment.
 
-You could define route params in a string `path`, for example:
+You could define route params in `path`, for example:
 
-```
-route path: /people/:username/articles/:articleId
-request: /people/johnsmith/articles/123
-params: { username: 'johnsmith', articleId: '123' }
+```js
+const router = new Router([
+  ['/people/:username/articles/:articleId', handler]
+])
+
+router.find('/people/johnsmith/articles/123')
+
+/*
+result:
+{
+  method: 'GET',
+  path: '/people/johnsmith/articles/123',
+  handler: handler
+  params: { username: 'johnsmith', articleId: '123' }
+}
+*/
 ```
 
 `*` is wildcard, e.g., route path `/foo*bar` can match `/foowwsdfbar`.
 
-If you need more power, use Regexp. Capturing groups will be set as route params, keys are `$1, $2, ...`.
+If you need more power, use Regexp. Capture groups will be set as route params, keys are `$1, $2, ...`.
 
-```
-route path: /^\/article\/(\d+)$/
-request: /article/123
-params: { $1: '123' }
+```js
+const router = new Router([
+  [/^\/article\/(\d+)$/, handler]
+])
+
+router.find('/article/123')
+
+/*
+result:
+{
+  method: 'GET',
+  path: '/article/123',
+  handler: handler
+  params: { $1: '123' }
+}
+*/
 ```
 
+You can use [named capture groups](http://2ality.com/2017/05/regexp-named-capture-groups.html) introduced in ES2018:
+```js
+const router = new Router([
+  [/^\/article\/(?<id>\d+)$/, handler]
+])
+
+router.find('/article/123')
+
+/*
+result:
+{
+  method: 'GET',
+  path: '/article/123',
+  handler: handler
+  params: { id: '123' }
+}
+*/
+```
 
 #### handler
 
 Any type. The handler you wish to handle the request.
-Based on your framework design, the handler can be a function to resolve the request,
-or the file path to your controller file, or an object with various options.
+Based on your framework design, the handler can be a function to handle the request,
+or the file path to your controller file, or an object (such as Vue component), etc.
 
 If `handler` is a string and contains `$` character, and `path` is a regexp (string with route params and wildcard will be converted to regexp underlying), the `handler` will be rewitten. For example:
 
-```
-route path: /people/:username/:page
-handler: /people/$2
-request: /people/johnsmith/articles
+```js
+const router = new Router([
+  ['/people/:username/:page', '/people/$2']
+])
 
-result: { handler: '/people/articles', params: { username: 'johnsmith', page: 'articles' } }
+router.find('/people/johnsmith/articles')
+
+/*
+result:
+{
+  method: 'GET',
+  path: '/people/johnsmith/articles',
+  handler: '/people/articles',
+  params: { username: 'johnsmith', page: 'articles' }
+}
+*/
 ```
 
 The rewrite formula is
@@ -118,15 +168,33 @@ The rewrite formula is
 routeHandler = requestPath.replace(routePath, routeHandler)
 ```
 
-The route params will be converted to capturing groups, so can be accessed by `$1, $2, ...`.
+The route params will be converted to capture groups, so can be accessed by `$1, $2, ...`.
 
+Use ES2018 named capture groups:
+```js
+const router = new Router([
+  [/\/member\/(?<id>\d+)\/(?<page>[^/]+)$/, '/member/$<page>']
+])
+
+router.find('/member/234/profile')
+
+/*
+result:
+{
+  method: 'GET',
+  path: '/member/234/profile',
+  handler: '/member/profile',
+  params: { id: '234', page: 'profile' }
+}
+*/
+```
 
 #### test
 
 Function. Optional. Your custom test function to test against the request.
-If test function is defined, the route will be matched only if
+If test function is defined, the route will be matched only if:
 1. The request path is matched with route's path
-2. The test function is passed (return true)
+2. The test function is passed (returns `true`)
 
 Function signature:
 
@@ -147,10 +215,10 @@ function test(matchedRoute, testArg) {
 }
 ```
 
-`testArg`: Arguments passed by `router.find()`.
+`testArg`: Arguments passed by `router.find(method?, path, testArg?)`.
 
 
-### router.add(method, path, handler, test)
+### router.add(method?, path, handler, test?)
 
 Adds a route to route table.
 
@@ -171,7 +239,7 @@ router.patch(path, handler, test)
 ```
 
 
-### router.find(method, path, testArg)
+### router.find(method?, path, testArg?)
 
 Finds the route which matches the method and path, and passes the test function if thers is one, or `null` if no route matches.
 

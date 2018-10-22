@@ -12,7 +12,7 @@ class Router {
   add(method, path, handler, test) {
     // method is omitted
     // defaults to 'GET'
-    if (method.constructor !== String || method[0] === '/') {
+    if (!['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'].includes(method)) {
       [method, path, handler, test] = ['GET', method, path, handler]
     }
 
@@ -95,7 +95,7 @@ class Router {
   find(method, path, testArg) {
     // method is omitted
     // defaults to 'GET'
-    if (method.constructor !== String || method[0] === '/') {
+    if (!['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'].includes(method)) {
       [method, path, testArg] = ['GET', method, path]
     }
 
@@ -113,13 +113,17 @@ class Router {
             handler = handler === '$&' ? path : path.replace(route.regex, handler)
           }
 
-          matches.shift()
-          const params = {}
-
-          if (route.params) {
-            route.params.forEach((v, i) => params[v] = matches[i])
+          let params
+          if (matches.groups) {
+            params = matches.groups
           } else {
-            matches.forEach((v, i) => params['$' + (i + 1)] = v)
+            params = {}
+            matches.shift()
+            if (route.params) {
+              route.params.forEach((v, i) => params[v] = matches[i])
+            } else {
+              matches.forEach((v, i) => params['$' + (i + 1)] = v)
+            }
           }
 
           resolved = {

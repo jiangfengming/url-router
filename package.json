@@ -2,10 +2,10 @@
   "name": "url-router",
   "version": "6.1.0",
   "description": "A non-opinionated cross-platform URL routing library.",
-  "main": "dist/Router.umd.js",
-  "module": "dist/Router.esm.js",
+  "main": "dist/Router.js",
+  "module": "dist/Router.mjs",
   "scripts": {
-    "build": "rollup -c rollup.config.esm.js && rollup -c rollup.config.umd.js"
+    "build": "rollup -c rollup.config.esm.mjs && rollup -c rollup.config.umd.mjs"
   },
   "repository": {
     "type": "git",
@@ -22,12 +22,12 @@
   },
   "homepage": "https://github.com/fenivana/url-router",
   "devDependencies": {
-    "@babel/core": "^7.1.0",
+    "@babel/core": "^7.1.2",
     "@babel/preset-env": "^7.1.0",
-    "babel-eslint": "^10.0.0",
-    "eslint": "^5.6.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.7.0",
     "eslint-config-enough": "^0.3.4",
-    "rollup": "^0.66.2",
+    "rollup": "^0.66.6",
     "rollup-plugin-babel": "^4.0.3"
   },
   "babel": {

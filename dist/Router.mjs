@@ -28,7 +28,7 @@ function () {
   _proto.add = function add(method, path, handler, test) {
     // method is omitted
     // defaults to 'GET'
-    if (method.constructor !== String || method[0] === '/') {
+    if (!['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'].includes(method)) {
       var _ref2 = ['GET', method, path, handler];
       method = _ref2[0];
       path = _ref2[1];
@@ -110,7 +110,7 @@ function () {
   _proto.find = function find(method, path, testArg) {
     // method is omitted
     // defaults to 'GET'
-    if (method.constructor !== String || method[0] === '/') {
+    if (!['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'].includes(method)) {
       var _ref3 = ['GET', method, path];
       method = _ref3[0];
       path = _ref3[1];
@@ -146,17 +146,23 @@ function () {
               handler = handler === '$&' ? path : path.replace(route.regex, handler);
             }
 
-            matches.shift();
-            var params = {};
+            var params;
 
-            if (route.params) {
-              route.params.forEach(function (v, i) {
-                return params[v] = matches[i];
-              });
+            if (matches.groups) {
+              params = matches.groups;
             } else {
-              matches.forEach(function (v, i) {
-                return params['$' + (i + 1)] = v;
-              });
+              params = {};
+              matches.shift();
+
+              if (route.params) {
+                route.params.forEach(function (v, i) {
+                  return params[v] = matches[i];
+                });
+              } else {
+                matches.forEach(function (v, i) {
+                  return params['$' + (i + 1)] = v;
+                });
+              }
             }
 
             resolved = {
