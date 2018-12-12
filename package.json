@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fenivana/url-router.git"
+    "url": "https://github.com/jiangfengming/url-router.git"
   },
   "keywords": [
     "url",
@@ -18,16 +18,16 @@
   "author": "Jiang Fengming",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/fenivana/url-router/issues"
+    "url": "https://github.com/jiangfengming/url-router/issues"
   },
-  "homepage": "https://github.com/fenivana/url-router",
+  "homepage": "https://github.com/jiangfengming/url-router",
   "devDependencies": {
     "@babel/core": "^7.1.2",
     "@babel/preset-env": "^7.1.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.7.0",
     "eslint-config-enough": "^0.3.4",
-    "rollup": "^0.66.6",
+    "rollup": "^0.67.4",
     "rollup-plugin-babel": "^4.0.3"
   },
   "babel": {
