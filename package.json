@@ -1,9 +1,8 @@
 {
   "name": "url-router",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "description": "A non-opinionated cross-platform URL routing library.",
-  "main": "dist/Router.js",
-  "module": "dist/Router.mjs",
+  "main": "dist/Router",
   "scripts": {
     "build": "rollup -c rollup.config.esm.mjs && rollup -c rollup.config.umd.mjs"
   },
@@ -22,13 +21,13 @@
   },
   "homepage": "https://github.com/jiangfengming/url-router",
   "devDependencies": {
-    "@babel/core": "^7.1.2",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.0",
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.7.0",
+    "eslint": "^5.10.0",
     "eslint-config-enough": "^0.3.4",
-    "rollup": "^0.67.4",
-    "rollup-plugin-babel": "^4.0.3"
+    "rollup": "^0.68.0",
+    "rollup-plugin-babel": "^4.1.0"
   },
   "babel": {
     "presets": [
