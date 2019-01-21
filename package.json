@@ -1,6 +1,6 @@
 {
   "name": "url-router",
-  "version": "7.0.2",
+  "version": "7.1.0",
   "description": "A non-opinionated cross-platform URL routing library.",
   "main": "dist/Router",
   "scripts": {
