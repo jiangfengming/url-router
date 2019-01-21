@@ -1,8 +1,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  global.Router = factory();
-}(typeof self !== 'undefined' ? self : this, function () { 'use strict';
+  (global = global || self, global.Router = factory());
+}(this, function () { 'use strict';
 
   var Router =
   /*#__PURE__*/
@@ -169,6 +169,10 @@
                     return params['$' + (i + 1)] = v;
                   });
                 }
+              }
+
+              for (var k in params) {
+                params[k] = decodeURIComponent(params[k]);
               }
 
               resolved = {
