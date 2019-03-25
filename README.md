@@ -57,8 +57,7 @@ http.createServer((req, res) => {
 
 Creates a router instance.
 
-Params:  
-`routes`: Array. An array of routes.
+`routes`: `Array`. An array of routes.
 
 route signature:
 
@@ -70,12 +69,13 @@ new Router([
 ```
 
 #### method
-String. Optional. HTTP method. `GET`, `POST`, `PUT`, `DELETE`, `HEAD`, `CONNECT`, `OPTIONS`, `TRACE`, `PATCH`.  
+String. Optional. HTTP method. `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, `OPTIONS`, `TRACE`.
 If `method` is omitted, it defaults to `GET`.
 
 #### path
 String | Regexp. The path to match against the request path.
 
+#### params
 You could define route params in `path`, for example:
 
 ```js
@@ -96,9 +96,11 @@ result:
 */
 ```
 
-`*` is wildcard, e.g., route path `/foo*bar` can match `/foowwsdfbar`.
+#### wildcard
+`*` can match any characters. e.g., `/foo*bar` can match `/foowwsdfbar`.
 
-If you need more power, use Regexp. Capture groups will be set as route params, keys are `$1, $2, ...`.
+#### RegExp
+If you need more power, use RegExp. Capture groups will be set as route params, keys are `$1, $2, ...`.
 
 ```js
 const router = new Router([
