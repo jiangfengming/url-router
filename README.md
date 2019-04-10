@@ -32,7 +32,7 @@ route.handler(route)
 
 ```js
 const http = require('http')
-const Router = require('url-router')
+const Router = require('url-router/es6')
 const { URL } = require('url')
 
 const article = require('./controllers/article')
@@ -69,7 +69,7 @@ new Router([
 ```
 
 #### method
-String. Optional. HTTP method. `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, `OPTIONS`, `TRACE`.
+String. Optional. HTTP method, case-sensitive. `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, `OPTIONS`, `TRACE`.
 If `method` is omitted, it defaults to `GET`.
 
 #### path
@@ -233,11 +233,10 @@ router.get(path, handler, test)
 router.post(path, handler, test)
 router.put(path, handler, test)
 router.delete(path, handler, test)
+router.patch(path, handler, test)
 router.head(path, handler, test)
-router.connect(path, handler, test)
 router.options(path, handler, test)
 router.trace(path, handler, test)
-router.patch(path, handler, test)
 ```
 
 

@@ -2,13 +2,14 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<script src="../dist/Router.js"></script>
 </head>
 
 <body>
 <p>Open console to see results.</p>
 
-<script>
+<script type="module">
+import Router from '../src/index.mjs'
+
 const router = new Router([
   ['GET', '/path/from', '/resolve/to'],
   ['POST', '/resolve/to/function', () => { console.log('hello') }],

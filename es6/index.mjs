@@ -1,10 +1,10 @@
 class Router {
   constructor(routes) {
-    this._routes = {}
+    this._routes = {};
 
     if (routes) {
       for (const route of routes) {
-        this.add(...route)
+        this.add(...route);
       }
     }
   }
@@ -13,12 +13,12 @@ class Router {
     // if method is omitted, defaults to 'GET'
     if (method.constructor !== String ||
       !['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)) {
-      [method, path, handler, test] = ['GET', method, path, handler]
+      [method, path, handler, test] = ['GET', method, path, handler];
     }
 
-    if (!this._routes[method]) this._routes[method] = []
+    if (!this._routes[method]) this._routes[method] = [];
 
-    const table = this._routes[method]
+    const table = this._routes[method];
 
     if (path.constructor === RegExp) {
       table.push({
@@ -26,23 +26,23 @@ class Router {
         regex: path,
         handler,
         test
-      })
+      });
     } else {
       if (!/:|\*|\$/.test(path)) {
         table.push({
           path,
           handler,
           test
-        })
+        });
       } else {
-        const params = []
+        const params = [];
 
         const regex = path.replace(/[\\&()+.[?^{|]/g, '\\$&')
           .replace(/:(\w+)/g, (str, key) => {
-            params.push(key)
+            params.push(key);
             return '([^/]+)'
           })
-          .replace(/\*/g, '.*')
+          .replace(/\*/g, '.*');
 
         table.push({
           path,
@@ -50,7 +50,7 @@ class Router {
           handler,
           params,
           test
-        })
+        });
       }
     }
   }
@@ -91,37 +91,37 @@ class Router {
     // if method is omitted, defaults to 'GET'
     if (method.constructor !== String ||
       !['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)) {
-      [method, path, testArg] = ['GET', method, path]
+      [method, path, testArg] = ['GET', method, path];
     }
 
-    const table = this._routes[method]
+    const table = this._routes[method];
 
     for (const route of table) {
-      let resolved
+      let resolved;
 
       if (route.regex) {
-        const matches = path.match(route.regex)
+        const matches = path.match(route.regex);
         if (matches) {
-          let handler = route.handler
+          let handler = route.handler;
           if (handler.constructor === String && handler.includes('$')) {
-            handler = handler === '$&' ? path : path.replace(route.regex, handler)
+            handler = handler === '$&' ? path : path.replace(route.regex, handler);
           }
 
-          let params
+          let params;
           if (matches.groups) {
-            params = matches.groups
+            params = matches.groups;
           } else {
-            params = {}
-            matches.shift()
+            params = {};
+            matches.shift();
             if (route.params) {
-              route.params.forEach((v, i) => params[v] = matches[i])
+              route.params.forEach((v, i) => params[v] = matches[i]);
             } else {
-              matches.forEach((v, i) => params['$' + (i + 1)] = v)
+              matches.forEach((v, i) => params['$' + (i + 1)] = v);
             }
           }
 
           for (const k in params) {
-            params[k] = decodeURIComponent(params[k])
+            params[k] = decodeURIComponent(params[k]);
           }
 
           resolved = {
@@ -129,7 +129,7 @@ class Router {
             path,
             handler,
             params
-          }
+          };
         }
       } else {
         if (route.path === path) {
@@ -138,7 +138,7 @@ class Router {
             path,
             handler: route.handler,
             params: {}
-          }
+          };
         }
       }
 
@@ -151,4 +151,4 @@ class Router {
   }
 }
 
-export default Router
+export default Router;

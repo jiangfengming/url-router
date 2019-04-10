@@ -26,9 +26,8 @@ function () {
   var _proto = Router.prototype;
 
   _proto.add = function add(method, path, handler, test) {
-    // method is omitted
-    // defaults to 'GET'
-    if (!['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'].includes(method)) {
+    // if method is omitted, defaults to 'GET'
+    if (method.constructor !== String || !['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)) {
       var _ref2 = ['GET', method, path, handler];
       method = _ref2[0];
       path = _ref2[1];
@@ -36,7 +35,6 @@ function () {
       test = _ref2[3];
     }
 
-    method = method.toUpperCase();
     if (!this._routes[method]) this._routes[method] = [];
     var table = this._routes[method];
 
@@ -83,16 +81,16 @@ function () {
     return this.add('PUT', path, handler, test);
   };
 
-  _proto.delete = function _delete(path, handler, test) {
+  _proto["delete"] = function _delete(path, handler, test) {
     return this.add('DELETE', path, handler, test);
+  };
+
+  _proto.patch = function patch(path, handler, test) {
+    return this.add('PATCH', path, handler, test);
   };
 
   _proto.head = function head(path, handler, test) {
     return this.add('HEAD', path, handler, test);
-  };
-
-  _proto.connect = function connect(path, handler, test) {
-    return this.add('CONNECT', path, handler, test);
   };
 
   _proto.options = function options(path, handler, test) {
@@ -103,21 +101,15 @@ function () {
     return this.add('TRACE', path, handler, test);
   };
 
-  _proto.patch = function patch(path, handler, test) {
-    return this.add('PATCH', path, handler, test);
-  };
-
   _proto.find = function find(method, path, testArg) {
-    // method is omitted
-    // defaults to 'GET'
-    if (!['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'].includes(method)) {
+    // if method is omitted, defaults to 'GET'
+    if (method.constructor !== String || !['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)) {
       var _ref3 = ['GET', method, path];
       method = _ref3[0];
       path = _ref3[1];
       testArg = _ref3[2];
     }
 
-    method = method.toUpperCase();
     var table = this._routes[method];
 
     for (var _iterator2 = table, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
