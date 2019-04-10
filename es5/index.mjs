@@ -35,7 +35,10 @@ function () {
       test = _ref2[3];
     }
 
-    if (!this._routes[method]) this._routes[method] = [];
+    if (!this._routes[method]) {
+      this._routes[method] = [];
+    }
+
     var table = this._routes[method];
 
     if (path.constructor === RegExp) {
@@ -67,6 +70,8 @@ function () {
         });
       }
     }
+
+    return this;
   };
 
   _proto.get = function get(path, handler, test) {

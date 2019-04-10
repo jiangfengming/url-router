@@ -18,7 +18,9 @@ class Router {
       [method, path, handler, test] = ['GET', method, path, handler];
     }
 
-    if (!this._routes[method]) this._routes[method] = [];
+    if (!this._routes[method]) {
+      this._routes[method] = [];
+    }
 
     const table = this._routes[method];
 
@@ -55,6 +57,8 @@ class Router {
         });
       }
     }
+
+    return this
   }
 
   get(path, handler, test) {
@@ -103,18 +107,22 @@ class Router {
 
       if (route.regex) {
         const matches = path.match(route.regex);
+
         if (matches) {
           let handler = route.handler;
+
           if (handler.constructor === String && handler.includes('$')) {
             handler = handler === '$&' ? path : path.replace(route.regex, handler);
           }
 
           let params;
+
           if (matches.groups) {
             params = matches.groups;
           } else {
             params = {};
             matches.shift();
+
             if (route.params) {
               route.params.forEach((v, i) => params[v] = matches[i]);
             } else {
