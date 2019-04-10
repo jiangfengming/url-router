@@ -215,7 +215,6 @@ function test(matchedRoute, testArg) {
 
 `testArg`: The argument provided by `router.find()`.
 
-
 ### Router.add()
 ```js
 router.add([method], path, handler, [test])
@@ -236,6 +235,15 @@ router.patch(path, handler, [test])
 router.head(path, handler, [test])
 router.options(path, handler, [test])
 router.trace(path, handler, [test])
+```
+
+#### Returns
+The router instance. So you could use method chaining:
+
+```js
+router
+  .get('/foo', foo)
+  .get('/bar', bar)
 ```
 
 ### Router.find()
