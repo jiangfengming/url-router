@@ -1,6 +1,6 @@
 {
   "name": "url-router",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "description": "A non-opinionated cross-platform URL routing library.",
   "main": "es5",
   "scripts": {
