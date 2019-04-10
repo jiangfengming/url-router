@@ -1,9 +1,7 @@
 # url-router
-
 A non-opinionated cross-platform URL routing library.
 
-## Installing
-
+## Installation
 ```
 npm install url-router
 ```
@@ -53,29 +51,31 @@ http.createServer((req, res) => {
 
 ## API
 
-### new Router(routes)
+### new Router()
+```js
+new Router([routes])
+```
 
 Creates a router instance.
 
-`routes`: `Array`. An array of routes.
-
-route signature:
+#### routes
+`Array`. An array of routes.
 
 ```js
-new Router([
+[
   [method?, path, handler, test?],
   ...
-])
+]
 ```
 
-#### method
-String. Optional. HTTP method, case-sensitive. `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, `OPTIONS`, `TRACE`.
+##### method
+`String.` Optional. HTTP method, case-sensitive. `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, `OPTIONS`, `TRACE`.
 If `method` is omitted, it defaults to `GET`.
 
-#### path
-String | Regexp. The path to match against the request path.
+##### path
+`String` | `RegExp`. The path to match against the request path.
 
-#### params
+###### params
 You could define route params in `path`, for example:
 
 ```js
@@ -96,10 +96,10 @@ result:
 */
 ```
 
-#### wildcard
+###### wildcard
 `*` can match any characters. e.g., `/foo*bar` can match `/foowwsdfbar`.
 
-#### RegExp
+###### RegExp
 If you need more power, use RegExp. Capture groups will be set as route params, keys are `$1, $2, ...`.
 
 ```js
@@ -139,9 +139,8 @@ result:
 */
 ```
 
-#### handler
-
-Any type. The handler you wish to handle the request.
+##### handler
+`Any`. The handler you wish to handle the request.
 Based on your framework design, the handler can be a function to handle the request,
 or the file path to your controller file, or an object (such as Vue component), etc.
 
@@ -191,14 +190,11 @@ result:
 */
 ```
 
-#### test
-
-Function. Optional. Your custom test function to test against the request.
+##### test
+`Function.` Optional. Your custom test function to test against the request.
 If test function is defined, the route will be matched only if:
 1. The request path is matched with route's path
 2. The test function is passed (returns `true`)
-
-Function signature:
 
 ```js
 function test(matchedRoute, testArg) {
@@ -206,7 +202,7 @@ function test(matchedRoute, testArg) {
 }
 ```
 
-`matchedRoute`: Object.
+`matchedRoute`: `Object`.
 
 ```js
 {
@@ -217,39 +213,49 @@ function test(matchedRoute, testArg) {
 }
 ```
 
-`testArg`: Arguments passed by `router.find(method?, path, testArg?)`.
+`testArg`: The argument provided by `router.find()`.
 
 
-### router.add(method?, path, handler, test?)
+### Router.add()
+```js
+router.add([method], path, handler, [test])
+```
 
-Adds a route to route table.
+Adds a route to the route table.
 
 `method` is optional, it defaults to `GET`.
 
 Every HTTP method has a shortcut alias:
 
 ```js
-router.get(path, handler, test)
-router.post(path, handler, test)
-router.put(path, handler, test)
-router.delete(path, handler, test)
-router.patch(path, handler, test)
-router.head(path, handler, test)
-router.options(path, handler, test)
-router.trace(path, handler, test)
+router.get(path, handler, [test])
+router.post(path, handler, [test])
+router.put(path, handler, [test])
+router.delete(path, handler, [test])
+router.patch(path, handler, [test])
+router.head(path, handler, [test])
+router.options(path, handler, [test])
+router.trace(path, handler, [test])
 ```
 
-
-### router.find(method?, path, testArg?)
+### Router.find()
+```js
+router.find([method], path, [testArg])
+```
 
 Finds the route which matches the method and path, and passes the test function if thers is one, or `null` if no route matches.
 
-Params:  
-`method`: String. Optional. The request method. If omitted, defaults to `GET`.  
-`path`: String. The request method.  
-`testArg`: Any. Optional. Argument provides to route test function.
+#### Parameters
+##### method
+`String.` Optional. The request method. If omitted, defaults to `GET`.  
 
-Returns: 
+##### path
+`String.` The request path.  
+
+##### testArg
+`Any`. Optional. Argument provides to route test function.
+
+#### Returns
 ```js
 {
   method,
