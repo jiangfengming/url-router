@@ -119,6 +119,10 @@ function () {
 
     var table = this._routes[method];
 
+    if (!table) {
+      return null;
+    }
+
     for (var _iterator2 = table, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
       var _ref4;
 

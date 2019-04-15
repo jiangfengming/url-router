@@ -100,6 +100,10 @@ class Router {
 
     const table = this._routes[method];
 
+    if (!table) {
+      return null
+    }
+
     for (const route of table) {
       let resolved;
 
