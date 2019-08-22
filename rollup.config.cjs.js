@@ -4,11 +4,13 @@ export default {
   input: 'src/index.mjs',
 
   output: {
-    format: 'esm',
-    file: 'es5/index.mjs'
+    format: 'cjs',
+    file: 'dist/URLRouter.js'
   },
 
   plugins: [
     babel()
-  ]
+  ],
+
+  external: ['cast-string']
 }
