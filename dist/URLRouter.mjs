@@ -1,4 +1,4 @@
-import { int, float, number, bool, string, arrayOfInt, arrayOfFloat, arrayOfNumber, arrayOfString } from 'cast-string';
+import { StringCaster } from 'cast-string';
 
 var Router =
 /*#__PURE__*/
@@ -176,7 +176,7 @@ function () {
               method: method,
               path: path,
               handler: handler,
-              params: createParamsObj(params)
+              params: new StringCaster(params)
             };
           }
         })();
@@ -186,7 +186,7 @@ function () {
             method: method,
             path: path,
             handler: route.handler,
-            params: createParamsObj({})
+            params: new StringCaster({})
           };
         }
       }
@@ -197,43 +197,6 @@ function () {
     }
 
     return null;
-
-    function createParamsObj(params) {
-      return {
-        all: params,
-        "int": function int$1(param, radix, defaults, throwIfInvalid) {
-          return int(this.all[param], radix, defaults, throwIfInvalid);
-        },
-        "float": function float$1(param, defaults, throwIfInvalid) {
-          return float(this.all[param], defaults, throwIfInvalid);
-        },
-        number: function number$1(param, defaults, throwIfInvalid) {
-          return number(this.all[param], defaults, throwIfInvalid);
-        },
-        bool: function bool$1(param, defaults, throwIfInvalid) {
-          return bool(this.all[param], defaults, throwIfInvalid);
-        },
-        string: function string$1(param, defaults) {
-          return string(this.all[param], defaults);
-        },
-        arrayOfInt: function arrayOfInt$1(param, radix, defaults, throwIfInvalid) {
-          var a = this.all[param] == null ? [] : this.all[param].split(',');
-          return arrayOfInt(a, radix, defaults, throwIfInvalid);
-        },
-        arrayOfFloat: function arrayOfFloat$1(param, defaults, throwIfInvalid) {
-          var a = this.all[param] == null ? [] : this.all[param].split(',');
-          return arrayOfFloat(a, defaults, throwIfInvalid);
-        },
-        arrayOfNumber: function arrayOfNumber$1(param, defaults, throwIfInvalid) {
-          var a = this.all[param] == null ? [] : this.all[param].split(',');
-          return arrayOfNumber(a, defaults, throwIfInvalid);
-        },
-        arrayOfString: function arrayOfString$1(param, defaults, throwIfInvalid) {
-          var a = this.all[param] == null ? [] : this.all[param].split(',');
-          return arrayOfString(a, defaults, throwIfInvalid);
-        }
-      };
-    }
   };
 
   return Router;

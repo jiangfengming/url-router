@@ -1,4 +1,4 @@
-import { int, float, number, bool, string, arrayOfInt, arrayOfFloat, arrayOfNumber, arrayOfString } from 'cast-string'
+import { StringCaster } from 'cast-string'
 
 class Router {
   constructor(routes) {
@@ -142,7 +142,7 @@ class Router {
             method,
             path,
             handler,
-            params: createParamsObj(params)
+            params: new StringCaster(params)
           }
         }
       } else {
@@ -151,7 +151,7 @@ class Router {
             method,
             path,
             handler: route.handler,
-            params: createParamsObj({})
+            params: new StringCaster({})
           }
         }
       }
@@ -162,52 +162,6 @@ class Router {
     }
 
     return null
-
-    function createParamsObj(params) {
-      return {
-        all: params,
-
-        int(param, radix, defaults, throwIfInvalid) {
-          return int(this.all[param], radix, defaults, throwIfInvalid)
-        },
-
-        float(param, defaults, throwIfInvalid) {
-          return float(this.all[param], defaults, throwIfInvalid)
-        },
-
-        number(param, defaults, throwIfInvalid) {
-          return number(this.all[param], defaults, throwIfInvalid)
-        },
-
-        bool(param, defaults, throwIfInvalid) {
-          return bool(this.all[param], defaults, throwIfInvalid)
-        },
-
-        string(param, defaults) {
-          return string(this.all[param], defaults)
-        },
-
-        arrayOfInt(param, radix, defaults, throwIfInvalid) {
-          const a = this.all[param] == null ? [] : this.all[param].split(',')
-          return arrayOfInt(a, radix, defaults, throwIfInvalid)
-        },
-
-        arrayOfFloat(param, defaults, throwIfInvalid) {
-          const a = this.all[param] == null ? [] : this.all[param].split(',')
-          return arrayOfFloat(a, defaults, throwIfInvalid)
-        },
-
-        arrayOfNumber(param, defaults, throwIfInvalid) {
-          const a = this.all[param] == null ? [] : this.all[param].split(',')
-          return arrayOfNumber(a, defaults, throwIfInvalid)
-        },
-
-        arrayOfString(param, defaults, throwIfInvalid) {
-          const a = this.all[param] == null ? [] : this.all[param].split(',')
-          return arrayOfString(a, defaults, throwIfInvalid)
-        }
-      }
-    }
   }
 }
 

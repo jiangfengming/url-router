@@ -30,7 +30,7 @@ route.handler(route)
 
 ```js
 const http = require('http')
-const Router = require('url-router/es6')
+const Router = require('url-router')
 const { URL } = require('url')
 
 const article = require('./controllers/article')
@@ -83,7 +83,7 @@ const router = new Router([
   ['/people/:username/articles/:articleId', handler]
 ])
 
-router.find('/people/johnsmith/articles/123')
+const matchedRoute = router.find('/people/johnsmith/articles/123')
 
 /*
 result:
@@ -91,10 +91,12 @@ result:
   method: 'GET',
   path: '/people/johnsmith/articles/123',
   handler: handler
-  params: { username: 'johnsmith', articleId: '123' }
+  params: new StringCaster({ username: 'johnsmith', articleId: '123' })
 }
 */
 ```
+
+`matchedRoute.params` is a [StringCaster](https://github.com/jiangfengming/cast-string#stringcaster) object.
 
 ###### wildcard
 `*` can match any characters. e.g., `/foo*bar` can match `/foowwsdfbar`.
@@ -115,7 +117,7 @@ result:
   method: 'GET',
   path: '/article/123',
   handler: handler
-  params: { $1: '123' }
+  params: new StringCaster({ $1: '123' })
 }
 */
 ```
@@ -134,7 +136,7 @@ result:
   method: 'GET',
   path: '/article/123',
   handler: handler
-  params: { id: '123' }
+  params: new StringCaster({ id: '123' })
 }
 */
 ```
@@ -159,7 +161,7 @@ result:
   method: 'GET',
   path: '/people/johnsmith/articles',
   handler: '/people/articles',
-  params: { username: 'johnsmith', page: 'articles' }
+  params: new StringCaster({ username: 'johnsmith', page: 'articles' })
 }
 */
 ```
@@ -185,7 +187,7 @@ result:
   method: 'GET',
   path: '/member/234/profile',
   handler: '/member/profile',
-  params: { id: '234', page: 'profile' }
+  params: new StringCaster({ id: '234', page: 'profile' })
 }
 */
 ```
@@ -272,6 +274,8 @@ Finds the route which matches the method and path, and passes the test function 
   params
 }
 ```
+
+`params` is a [StringCaster](https://github.com/jiangfengming/cast-string#stringcaster) object.
 
 ## License
 [MIT](LICENSE)
