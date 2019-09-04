@@ -166,7 +166,7 @@ function () {
             }
 
             for (var k in params) {
-              params[k] = decodeURIComponent(params[k]);
+              params[k] = !params[k] ? params[k] : decodeURIComponent(params[k]);
             }
 
             resolved = {
