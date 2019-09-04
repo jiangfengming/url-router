@@ -63,7 +63,7 @@ Creates a router instance.
 
 ```js
 [
-  [method?, path, handler, test?],
+  [method?, path, handler],
   ...
 ]
 ```
@@ -192,18 +192,6 @@ result:
 */
 ```
 
-##### test
-`Function.` Optional. Your custom test function to test against the request.
-If test function is defined, the route will be matched only if:
-1. The request path is matched with route's path
-2. The test function is passed (returns `true`)
-
-```js
-function test(matchedRoute, testArg) {
-  // should return true or false
-}
-```
-
 `matchedRoute`: `Object`.
 
 ```js
@@ -215,11 +203,9 @@ function test(matchedRoute, testArg) {
 }
 ```
 
-`testArg`: The argument provided by `router.find()`.
-
 ### Router.add()
 ```js
-router.add([method], path, handler, [test])
+router.add([method], path, handler)
 ```
 
 Adds a route to the route table.
@@ -229,14 +215,14 @@ Adds a route to the route table.
 Every HTTP method has a shortcut alias:
 
 ```js
-router.get(path, handler, [test])
-router.post(path, handler, [test])
-router.put(path, handler, [test])
-router.delete(path, handler, [test])
-router.patch(path, handler, [test])
-router.head(path, handler, [test])
-router.options(path, handler, [test])
-router.trace(path, handler, [test])
+router.get(path, handler)
+router.post(path, handler)
+router.put(path, handler)
+router.delete(path, handler)
+router.patch(path, handler)
+router.head(path, handler)
+router.options(path, handler)
+router.trace(path, handler)
 ```
 
 #### Returns
@@ -250,10 +236,10 @@ router
 
 ### Router.find()
 ```js
-router.find([method], path, [testArg])
+router.find([method], path)
 ```
 
-Finds the route which matches the method and path, and passes the test function if thers is one, or `null` if no route matches.
+Finds the route which matches the method and path, or `null` if no route matches.
 
 #### Parameters
 ##### method
@@ -261,9 +247,6 @@ Finds the route which matches the method and path, and passes the test function 
 
 ##### path
 `String.` The request path.  
-
-##### testArg
-`Any`. Optional. Argument provides to route test function.
 
 #### Returns
 ```js

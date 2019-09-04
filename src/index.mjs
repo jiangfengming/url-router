@@ -11,11 +11,12 @@ class Router {
     }
   }
 
-  add(method, path, handler, test) {
+  add(method, path, handler) {
     // if method is omitted, defaults to 'GET'
-    if (method.constructor !== String ||
-      !['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)) {
-      [method, path, handler, test] = ['GET', method, path, handler]
+    if (method.constructor !== String
+      || !['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)
+    ) {
+      [method, path, handler] = ['GET', method, path]
     }
 
     if (!this._routes[method]) {
@@ -28,15 +29,13 @@ class Router {
       table.push({
         path,
         regex: path,
-        handler,
-        test
+        handler
       })
     } else {
       if (!/:|\*|\$/.test(path)) {
         table.push({
           path,
-          handler,
-          test
+          handler
         })
       } else {
         const params = []
@@ -52,8 +51,7 @@ class Router {
           path,
           regex: new RegExp(`^${regex}$`),
           handler,
-          params,
-          test
+          params
         })
       }
     }
@@ -61,43 +59,42 @@ class Router {
     return this
   }
 
-  get(path, handler, test) {
-    return this.add('GET', path, handler, test)
+  get(path, handler) {
+    return this.add('GET', path, handler)
   }
 
-  post(path, handler, test) {
-    return this.add('POST', path, handler, test)
+  post(path, handler) {
+    return this.add('POST', path, handler)
   }
 
-  put(path, handler, test) {
-    return this.add('PUT', path, handler, test)
+  put(path, handler) {
+    return this.add('PUT', path, handler)
   }
 
-  delete(path, handler, test) {
-    return this.add('DELETE', path, handler, test)
+  delete(path, handler) {
+    return this.add('DELETE', path, handler)
   }
 
-  patch(path, handler, test) {
-    return this.add('PATCH', path, handler, test)
+  patch(path, handler) {
+    return this.add('PATCH', path, handler)
   }
 
-  head(path, handler, test) {
-    return this.add('HEAD', path, handler, test)
+  head(path, handler) {
+    return this.add('HEAD', path, handler)
   }
 
-  options(path, handler, test) {
-    return this.add('OPTIONS', path, handler, test)
+  options(path, handler) {
+    return this.add('OPTIONS', path, handler)
   }
 
-  trace(path, handler, test) {
-    return this.add('TRACE', path, handler, test)
+  trace(path, handler) {
+    return this.add('TRACE', path, handler)
   }
 
-  find(method, path, testArg) {
+  find(method, path) {
     // if method is omitted, defaults to 'GET'
-    if (method.constructor !== String ||
-      !['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)) {
-      [method, path, testArg] = ['GET', method, path]
+    if (!['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)) {
+      [method, path] = ['GET', method]
     }
 
     const table = this._routes[method]
@@ -156,7 +153,7 @@ class Router {
         }
       }
 
-      if (resolved && (!route.test || route.test(resolved, testArg))) {
+      if (resolved) {
         return resolved
       }
     }

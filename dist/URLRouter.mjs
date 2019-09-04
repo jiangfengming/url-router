@@ -27,14 +27,13 @@ function () {
 
   var _proto = Router.prototype;
 
-  _proto.add = function add(method, path, handler, test) {
+  _proto.add = function add(method, path, handler) {
     // if method is omitted, defaults to 'GET'
     if (method.constructor !== String || !['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)) {
-      var _ref2 = ['GET', method, path, handler];
+      var _ref2 = ['GET', method, path];
       method = _ref2[0];
       path = _ref2[1];
       handler = _ref2[2];
-      test = _ref2[3];
     }
 
     if (!this._routes[method]) {
@@ -47,15 +46,13 @@ function () {
       table.push({
         path: path,
         regex: path,
-        handler: handler,
-        test: test
+        handler: handler
       });
     } else {
       if (!/:|\*|\$/.test(path)) {
         table.push({
           path: path,
-          handler: handler,
-          test: test
+          handler: handler
         });
       } else {
         var params = [];
@@ -67,8 +64,7 @@ function () {
           path: path,
           regex: new RegExp("^" + regex + "$"),
           handler: handler,
-          params: params,
-          test: test
+          params: params
         });
       }
     }
@@ -76,45 +72,44 @@ function () {
     return this;
   };
 
-  _proto.get = function get(path, handler, test) {
-    return this.add('GET', path, handler, test);
+  _proto.get = function get(path, handler) {
+    return this.add('GET', path, handler);
   };
 
-  _proto.post = function post(path, handler, test) {
-    return this.add('POST', path, handler, test);
+  _proto.post = function post(path, handler) {
+    return this.add('POST', path, handler);
   };
 
-  _proto.put = function put(path, handler, test) {
-    return this.add('PUT', path, handler, test);
+  _proto.put = function put(path, handler) {
+    return this.add('PUT', path, handler);
   };
 
-  _proto["delete"] = function _delete(path, handler, test) {
-    return this.add('DELETE', path, handler, test);
+  _proto["delete"] = function _delete(path, handler) {
+    return this.add('DELETE', path, handler);
   };
 
-  _proto.patch = function patch(path, handler, test) {
-    return this.add('PATCH', path, handler, test);
+  _proto.patch = function patch(path, handler) {
+    return this.add('PATCH', path, handler);
   };
 
-  _proto.head = function head(path, handler, test) {
-    return this.add('HEAD', path, handler, test);
+  _proto.head = function head(path, handler) {
+    return this.add('HEAD', path, handler);
   };
 
-  _proto.options = function options(path, handler, test) {
-    return this.add('OPTIONS', path, handler, test);
+  _proto.options = function options(path, handler) {
+    return this.add('OPTIONS', path, handler);
   };
 
-  _proto.trace = function trace(path, handler, test) {
-    return this.add('TRACE', path, handler, test);
+  _proto.trace = function trace(path, handler) {
+    return this.add('TRACE', path, handler);
   };
 
-  _proto.find = function find(method, path, testArg) {
+  _proto.find = function find(method, path) {
     // if method is omitted, defaults to 'GET'
-    if (method.constructor !== String || !['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)) {
-      var _ref3 = ['GET', method, path];
+    if (!['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE'].includes(method)) {
+      var _ref3 = ['GET', method];
       method = _ref3[0];
       path = _ref3[1];
-      testArg = _ref3[2];
     }
 
     var table = this._routes[method];
@@ -191,7 +186,7 @@ function () {
         }
       }
 
-      if (resolved && (!route.test || route.test(resolved, testArg))) {
+      if (resolved) {
         return resolved;
       }
     }
