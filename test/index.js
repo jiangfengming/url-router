@@ -5,7 +5,8 @@ const router = new Router([
   ['/foo', 1],
   ['/user/:id', 2],
   ['/user/:id/:page', 3],
-  ['/people/:name(\\w+)', 4]
+  ['/people/:name(\\w+)', 4],
+  ['(.*)', 5]
 ])
 
 let r
@@ -24,3 +25,6 @@ assert.strictEqual(r.params.page, 'articles')
 r = router.find('/people/john')
 assert.strictEqual(r.handler, 4)
 assert.strictEqual(r.params.name, 'john')
+
+r = router.find('/404')
+assert.strictEqual(r.handler, 5)
