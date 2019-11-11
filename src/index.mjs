@@ -9,7 +9,7 @@ class Router {
     }
   }
 
-  _createNode({ regex, param, handler }) {
+  _createNode({ regex, param, handler } = {}) {
     return {
       regex,
       param,

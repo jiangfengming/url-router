@@ -21,15 +21,12 @@
     "url": "https://github.com/jiangfengming/url-router/issues"
   },
   "homepage": "https://github.com/jiangfengming/url-router",
-  "dependencies": {
-    "cast-string": "^0.3.0"
-  },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "eslint": "^6.3.0",
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "eslint": "^6.6.0",
     "eslint-config-enough": "^0.3.8",
-    "rollup": "^1.20.3",
+    "rollup": "^1.26.5",
     "rollup-plugin-babel": "^4.3.3"
   },
   "babel": {

@@ -10,7 +10,5 @@ export default {
 
   plugins: [
     babel()
-  ],
-
-  external: ['cast-string']
+  ]
 }
