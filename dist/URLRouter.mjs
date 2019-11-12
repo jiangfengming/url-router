@@ -1,35 +1,26 @@
 var Router =
 /*#__PURE__*/
 function () {
-  function Router(routes) {
+  function Router() {
     this.root = this._createNode();
 
-    if (routes) {
-      for (var _iterator = routes, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-        var _ref;
+    for (var _len = arguments.length, routes = new Array(_len), _key = 0; _key < _len; _key++) {
+      routes[_key] = arguments[_key];
+    }
 
-        if (_isArray) {
-          if (_i >= _iterator.length) break;
-          _ref = _iterator[_i++];
-        } else {
-          _i = _iterator.next();
-          if (_i.done) break;
-          _ref = _i.value;
-        }
-
-        var route = _ref;
-        this.add.apply(this, route);
-      }
+    for (var _i = 0, _routes = routes; _i < _routes.length; _i++) {
+      var route = _routes[_i];
+      this.add.apply(this, route);
     }
   }
 
   var _proto = Router.prototype;
 
   _proto._createNode = function _createNode(_temp) {
-    var _ref2 = _temp === void 0 ? {} : _temp,
-        regex = _ref2.regex,
-        param = _ref2.param,
-        handler = _ref2.handler;
+    var _ref = _temp === void 0 ? {} : _temp,
+        regex = _ref.regex,
+        param = _ref.param,
+        handler = _ref.handler;
 
     return {
       regex: regex,
@@ -42,8 +33,8 @@ function () {
     };
   };
 
-  _proto.add = function add(path, handler) {
-    this._parseOptim(path, handler, this.root);
+  _proto.add = function add(pattern, handler) {
+    this._parseOptim(pattern, handler, this.root);
 
     return this;
   };

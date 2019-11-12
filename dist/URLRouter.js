@@ -1,59 +1,36 @@
 'use strict';
 
-var Router =
-/*#__PURE__*/
-function () {
-  function Router(routes) {
+class Router {
+  constructor(...routes) {
     this.root = this._createNode();
 
-    if (routes) {
-      for (var _iterator = routes, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-        var _ref;
-
-        if (_isArray) {
-          if (_i >= _iterator.length) break;
-          _ref = _iterator[_i++];
-        } else {
-          _i = _iterator.next();
-          if (_i.done) break;
-          _ref = _i.value;
-        }
-
-        var route = _ref;
-        this.add.apply(this, route);
-      }
+    for (const route of routes) {
+      this.add(...route);
     }
   }
 
-  var _proto = Router.prototype;
-
-  _proto._createNode = function _createNode(_temp) {
-    var _ref2 = _temp === void 0 ? {} : _temp,
-        regex = _ref2.regex,
-        param = _ref2.param,
-        handler = _ref2.handler;
-
+  _createNode({ regex, param, handler } = {}) {
     return {
-      regex: regex,
-      param: param,
-      handler: handler,
+      regex,
+      param,
+      handler,
+
       children: {
         string: {},
         regex: {}
       }
-    };
-  };
+    }
+  }
 
-  _proto.add = function add(path, handler) {
-    this._parseOptim(path, handler, this.root);
+  add(pattern, handler) {
+    this._parseOptim(pattern, handler, this.root);
+    return this
+  }
 
-    return this;
-  };
-
-  _proto._parse = function _parse(remain, handler, parent) {
+  _parse(remain, handler, parent) {
     if (/^(:\w|\()/.test(remain)) {
-      var match = remain.match(/^(?::(\w+))?(?:\(([^)]+)\))?/);
-      var node = parent.children.regex[match[0]];
+      const match = remain.match(/^(?::(\w+))?(?:\(([^)]+)\))?/);
+      let node = parent.children.regex[match[0]];
 
       if (!node) {
         node = parent.children.regex[match[0]] = this._createNode({
@@ -68,58 +45,56 @@ function () {
         this._parseOptim(remain.slice(match[0].length), handler, node);
       }
     } else {
-      var _char = remain[0];
-      var _node = parent.children.string[_char];
+      const char = remain[0];
+      let node = parent.children.string[char];
 
-      if (!_node) {
-        _node = parent.children.string[_char] = this._createNode();
+      if (!node) {
+        node = parent.children.string[char] = this._createNode();
       }
 
-      this._parse(remain.slice(1), handler, _node);
+      this._parse(remain.slice(1), handler, node);
     }
-  };
+  }
 
-  _proto._parseOptim = function _parseOptim(remain, handler, node) {
+  _parseOptim(remain, handler, node) {
     if (/:\w|\(/.test(remain)) {
       this._parse(remain, handler, node);
     } else {
-      node.children.string[remain] = this._createNode({
-        handler: handler
-      });
+      node.children.string[remain] = this._createNode({ handler });
     }
-  };
+  }
 
-  _proto.find = function find(path) {
-    return this._findOptim(path, this.root, {});
-  };
+  find(path) {
+    return this._findOptim(path, this.root, {})
+  }
 
-  _proto._findOptim = function _findOptim(remain, node, params) {
-    var child = node.children.string[remain];
+  _findOptim(remain, node, params) {
+    const child = node.children.string[remain];
 
     if (child && child.handler) {
       return {
         handler: child.handler,
-        params: params
-      };
-    }
-
-    return this._find(remain, node, params);
-  };
-
-  _proto._find = function _find(remain, node, params) {
-    var child = node.children.string[remain[0]];
-
-    if (child) {
-      var result = this._find(remain.slice(1), child, params);
-
-      if (result) {
-        return result;
+        params
       }
     }
 
-    for (var k in node.children.regex) {
+    return this._find(remain, node, params)
+  }
+
+  _find(remain, node, params) {
+    let child = node.children.string[remain[0]];
+
+    if (child) {
+      const result = this._find(remain.slice(1), child, params);
+
+      if (result) {
+        return result
+      }
+    }
+
+    for (const k in node.children.regex) {
       child = node.children.regex[k];
-      var match = remain.match(child.regex);
+      const match = remain.match(child.regex);
 
       if (match) {
         if (child.param) {
@@ -129,22 +104,20 @@ function () {
         if (match[0].length === remain.length) {
           return {
             handler: child.handler,
-            params: params
-          };
+            params
+          }
         } else {
-          var _result = this._findOptim(remain.slice(match[0].length), child, params);
+          const result = this._findOptim(remain.slice(match[0].length), child, params);
 
-          if (_result) {
-            return _result;
+          if (result) {
+            return result
           }
         }
       }
     }
 
-    return null;
-  };
-
-  return Router;
-}();
+    return null
+  }
+}
 
 module.exports = Router;

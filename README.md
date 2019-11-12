@@ -1,5 +1,5 @@
 # url-router
-A non-opinionated cross-platform URL routing library.
+A Trie-based router.
 
 ## Installation
 ```
@@ -8,257 +8,132 @@ npm install url-router
 
 ## Examples
 
-### Browser:
-
 ```js
-import Router from 'url-router'
-
-const router = new Router([
-  ['/', () => import('./views/Homepage')],
-  ['/user/:id/profile', () => import('./views/UserProfile')],
-  [/^\/article\/(\d+)$/, () => import('./views/Article')],
-
-  // es2018 named capture groups
-  [/^\/post\/(?<id>\d+)$/, () => import('./views/Post')]
-])
-
-const route = router.find(location.pathname)
-route.handler(route)
-```
-
-### node.js:
-
-```js
-const http = require('http')
+const assert = require('assert')
 const Router = require('url-router')
-const { URL } = require('url')
 
-const article = require('./controllers/article')
+const router = new Router(
+  ['/foo', 1],
+  ['/user/:id', 2],
+  ['/user/:id/:page', 3],
+  ['/people/:name(\\w+)', 4],
+  ['(.*)', 5]
+)
 
-const router = new Router([
-  ['GET','/article/:id', article.get],
-  ['POST', '/article', article.create],
-  ['PUT', '/article/:id', article.update],
-  ['DELETE', '/article/:id', article.remove],
-])
+let r
+r = router.find('/foo')
+assert.strictEqual(r.handler, 1)
 
-http.createServer((req, res) => {
-  const url = new URL(req.url)
-  const route = router.find(req.method, url.pathname)
-  route.handler({ req, res, route })
-}).listen(8080)
+r = router.find('/user/123')
+assert.strictEqual(r.handler, 2)
+assert.strictEqual(r.params.id, '123')
+
+r = router.find('/user/456/articles')
+assert.strictEqual(r.handler, 3)
+assert.strictEqual(r.params.id, '456')
+assert.strictEqual(r.params.page, 'articles')
+
+r = router.find('/people/john')
+assert.strictEqual(r.handler, 4)
+assert.strictEqual(r.params.name, 'john')
+
+r = router.find('/404')
+assert.strictEqual(r.handler, 5)
 ```
 
 ## API
 
-### new Router()
+### Router
 ```js
-new Router([routes])
+new Router(
+  [pattern1, handler1],
+  [pattern2, handler2],
+  ...
+)
 ```
 
 Creates a router instance.
 
-#### routes
-`Array`. An array of routes.
+If parameters are provided, `router.add` will be applied on each parameter.
 
+### router.add
 ```js
-[
-  [method?, path, handler],
-  ...
-]
+router.add(pattern, handler)
 ```
 
-##### method
-`String.` Optional. HTTP method, case-sensitive. `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, `OPTIONS`, `TRACE`.
-If `method` is omitted, it defaults to `GET`.
+Adds a route definition.
 
-##### path
-`String` | `RegExp`. The path to match against the request path.
+#### Params
 
-###### params
-You could define route params in `path`, for example:
+##### pattern
+`String`. The pattern to match against the request path.
+
+You can define params in `pattern`, for example:
 
 ```js
-const router = new Router([
-  ['/people/:username/articles/:articleId', handler]
-])
-
-const matchedRoute = router.find('/people/johnsmith/articles/123')
-
+const router = new Router()
+router.add('/people/:username/articles/:articleId(\\d+)', handler)
+const result = router.find('/people/johnsmith/articles/123')
 /*
 result:
 {
-  method: 'GET',
-  path: '/people/johnsmith/articles/123',
-  handler: handler
-  params: new StringCaster({ username: 'johnsmith', articleId: '123' })
+  handler: handler,
+  params: {
+    username: 'johnsmith',
+    articleId: '123'
+  }
 }
 */
 ```
 
-`matchedRoute.params` is a [StringCaster](https://github.com/jiangfengming/cast-string#stringcaster) object.
+If regex is omitted, it defaults to `[^/]+`.
 
-###### wildcard
-`*` can match any characters. e.g., `/foo*bar` can match `/foowwsdfbar`.
-
-###### RegExp
-If you need more power, use RegExp. Capture groups will be set as route params, keys are `$1, $2, ...`.
+You can also use regex without setting the parameter name, for example:
 
 ```js
-const router = new Router([
-  [/^\/article\/(\d+)$/, handler]
-])
-
-router.find('/article/123')
-
-/*
-result:
-{
-  method: 'GET',
-  path: '/article/123',
-  handler: handler
-  params: new StringCaster({ $1: '123' })
-}
-*/
+router.add('(.*)', NotFound)
 ```
 
-You can use [named capture groups](http://2ality.com/2017/05/regexp-named-capture-groups.html) introduced in ES2018:
-```js
-const router = new Router([
-  [/^\/article\/(?<id>\d+)$/, handler]
-])
-
-router.find('/article/123')
-
-/*
-result:
-{
-  method: 'GET',
-  path: '/article/123',
-  handler: handler
-  params: new StringCaster({ id: '123' })
-}
-*/
-```
+This defines a catch-all route.
 
 ##### handler
 `Any`. The handler you wish to handle the request.
 Based on your framework design, the handler can be a function to handle the request,
 or the file path to your controller file, or an object (such as Vue component), etc.
 
-If `handler` is a string and contains `$` character, and `path` is a regexp (string with route params and wildcard will be converted to regexp underlying), the `handler` will be rewitten. For example:
-
-```js
-const router = new Router([
-  ['/people/:username/:page', '/people/$2']
-])
-
-router.find('/people/johnsmith/articles')
-
-/*
-result:
-{
-  method: 'GET',
-  path: '/people/johnsmith/articles',
-  handler: '/people/articles',
-  params: new StringCaster({ username: 'johnsmith', page: 'articles' })
-}
-*/
-```
-
-The rewrite formula is
-```js
-routeHandler = requestPath.replace(routePath, routeHandler)
-```
-
-The route params will be converted to capture groups, so can be accessed by `$1, $2, ...`.
-
-Use ES2018 named capture groups:
-```js
-const router = new Router([
-  [/\/member\/(?<id>\d+)\/(?<page>[^/]+)$/, '/member/$<page>']
-])
-
-router.find('/member/234/profile')
-
-/*
-result:
-{
-  method: 'GET',
-  path: '/member/234/profile',
-  handler: '/member/profile',
-  params: new StringCaster({ id: '234', page: 'profile' })
-}
-*/
-```
-
-`matchedRoute`: `Object`.
-
-```js
-{
-  method,
-  path,
-  handler,
-  params
-}
-```
-
-### Router.add()
-```js
-router.add([method], path, handler)
-```
-
-Adds a route to the route table.
-
-`method` is optional, it defaults to `GET`.
-
-Every HTTP method has a shortcut alias:
-
-```js
-router.get(path, handler)
-router.post(path, handler)
-router.put(path, handler)
-router.delete(path, handler)
-router.patch(path, handler)
-router.head(path, handler)
-router.options(path, handler)
-router.trace(path, handler)
-```
-
 #### Returns
 The router instance. So you could use method chaining:
 
 ```js
 router
-  .get('/foo', foo)
-  .get('/bar', bar)
+  .add('/foo', foo)
+  .add('/bar', bar)
 ```
 
-### Router.find()
+### router.find
 ```js
-router.find([method], path)
+router.find(path)
 ```
 
-Finds the route which matches the method and path, or `null` if no route matches.
+Finds the route which matches the path.
 
 #### Parameters
-##### method
-`String.` Optional. The request method. If omitted, defaults to `GET`.  
 
 ##### path
 `String.` The request path.  
 
 #### Returns
+
+`handler` and `params` of the route:
+
 ```js
 {
-  method,
-  path,
   handler,
   params
 }
 ```
 
-`params` is a [StringCaster](https://github.com/jiangfengming/cast-string#stringcaster) object.
+Or `null` if not found.
 
 ## License
 [MIT](LICENSE)

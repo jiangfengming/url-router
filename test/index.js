@@ -1,13 +1,13 @@
 const assert = require('assert')
 const Router = require('..')
 
-const router = new Router([
+const router = new Router(
   ['/foo', 1],
   ['/user/:id', 2],
   ['/user/:id/:page', 3],
   ['/people/:name(\\w+)', 4],
   ['(.*)', 5]
-])
+)
 
 let r
 r = router.find('/foo')

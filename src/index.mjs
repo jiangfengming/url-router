@@ -1,11 +1,9 @@
 class Router {
-  constructor(routes) {
+  constructor(...routes) {
     this.root = this._createNode()
 
-    if (routes) {
-      for (const route of routes) {
-        this.add.apply(this, route)
-      }
+    for (const route of routes) {
+      this.add(...route)
     }
   }
 
@@ -22,8 +20,8 @@ class Router {
     }
   }
 
-  add(path, handler) {
-    this._parseOptim(path, handler, this.root)
+  add(pattern, handler) {
+    this._parseOptim(pattern, handler, this.root)
     return this
   }
 
