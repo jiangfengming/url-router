@@ -1,5 +1,10 @@
 'use strict';
 
+const REGEX_PARAM_DEFAULT = /^[^/]+/;
+const REGEX_START_WITH_PARAM = /^(:\w|\()/;
+const REGEX_INCLUDE_PARAM = /:\w|\(/;
+const REGEX_MATCH_PARAM = /^(?::(\w+))?(?:\(([^)]+)\))?/;
+
 class Router {
   constructor(...routes) {
     this.root = this._createNode();
@@ -28,13 +33,13 @@ class Router {
   }
 
   _parse(remain, handler, parent) {
-    if (/^(:\w|\()/.test(remain)) {
-      const match = remain.match(/^(?::(\w+))?(?:\(([^)]+)\))?/);
+    if (REGEX_START_WITH_PARAM.test(remain)) {
+      const match = remain.match(REGEX_MATCH_PARAM);
       let node = parent.children.regex[match[0]];
 
       if (!node) {
         node = parent.children.regex[match[0]] = this._createNode({
-          regex: match[2] ? new RegExp('^' + match[2]) : /^[^/]+/,
+          regex: match[2] ? new RegExp('^' + match[2]) : REGEX_PARAM_DEFAULT,
           param: match[1]
         });
       }
@@ -57,7 +62,7 @@ class Router {
   }
 
   _parseOptim(remain, handler, node) {
-    if (/:\w|\(/.test(remain)) {
+    if (REGEX_INCLUDE_PARAM.test(remain)) {
       this._parse(remain, handler, node);
     } else {
       node.children.string[remain] = this._createNode({ handler });

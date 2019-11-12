@@ -1,3 +1,8 @@
+var REGEX_PARAM_DEFAULT = /^[^/]+/;
+var REGEX_START_WITH_PARAM = /^(:\w|\()/;
+var REGEX_INCLUDE_PARAM = /:\w|\(/;
+var REGEX_MATCH_PARAM = /^(?::(\w+))?(?:\(([^)]+)\))?/;
+
 var Router =
 /*#__PURE__*/
 function () {
@@ -40,13 +45,13 @@ function () {
   };
 
   _proto._parse = function _parse(remain, handler, parent) {
-    if (/^(:\w|\()/.test(remain)) {
-      var match = remain.match(/^(?::(\w+))?(?:\(([^)]+)\))?/);
+    if (REGEX_START_WITH_PARAM.test(remain)) {
+      var match = remain.match(REGEX_MATCH_PARAM);
       var node = parent.children.regex[match[0]];
 
       if (!node) {
         node = parent.children.regex[match[0]] = this._createNode({
-          regex: match[2] ? new RegExp('^' + match[2]) : /^[^/]+/,
+          regex: match[2] ? new RegExp('^' + match[2]) : REGEX_PARAM_DEFAULT,
           param: match[1]
         });
       }
@@ -69,7 +74,7 @@ function () {
   };
 
   _proto._parseOptim = function _parseOptim(remain, handler, node) {
-    if (/:\w|\(/.test(remain)) {
+    if (REGEX_INCLUDE_PARAM.test(remain)) {
       this._parse(remain, handler, node);
     } else {
       node.children.string[remain] = this._createNode({

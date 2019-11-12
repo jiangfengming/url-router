@@ -1,7 +1,7 @@
 {
   "name": "url-router",
   "version": "9.0.1",
-  "description": "A non-opinionated cross-platform URL routing library.",
+  "description": "A Trie-based router",
   "main": "dist/URLRouter",
   "scripts": {
     "build": "rollup -c rollup.config.esm.js && rollup -c rollup.config.cjs.js",
@@ -13,7 +13,8 @@
   },
   "keywords": [
     "url",
-    "router"
+    "router",
+    "trie"
   ],
   "author": "Jiang Fengming",
   "license": "MIT",
