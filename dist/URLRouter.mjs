@@ -116,11 +116,11 @@ function () {
       var match = remain.match(child.regex);
 
       if (match) {
-        if (child.param) {
-          params[child.param] = match[0];
-        }
+        if (match[0].length === remain.length && child.handler) {
+          if (child.param) {
+            params[child.param] = match[0];
+          }
 
-        if (match[0].length === remain.length) {
           return {
             handler: child.handler,
             params: params
@@ -129,6 +129,10 @@ function () {
           var _result = this._findOptim(remain.slice(match[0].length), child, params);
 
           if (_result) {
+            if (child.param) {
+              params[child.param] = match[0];
+            }
+
             return _result;
           }
         }

@@ -14,31 +14,86 @@ const Router = require('url-router')
 
 const router = new Router(
   ['/foo', 1],
-  ['/user/:id', 2],
-  ['/user/:id/:page', 3],
-  ['/people/:name(\\w+)', 4],
-  ['(.*)', 5]
+  ['/foo/bar', 2],
+  ['/user/:id', 3],
+  ['/user/:id/:page', 4],
+  ['/people/:name(\\w+)', 5],
+  ['(.*)', 6],
+  ['/:year(\\d+)-:month(\\d+)', 7]
 )
 
-let r
-r = router.find('/foo')
-assert.strictEqual(r.handler, 1)
+assert.deepStrictEqual(
+  router.find('/foo'),
 
-r = router.find('/user/123')
-assert.strictEqual(r.handler, 2)
-assert.strictEqual(r.params.id, '123')
+  {
+    handler: 1,
+    params: {}
+  }
+)
 
-r = router.find('/user/456/articles')
-assert.strictEqual(r.handler, 3)
-assert.strictEqual(r.params.id, '456')
-assert.strictEqual(r.params.page, 'articles')
+assert.deepStrictEqual(
+  router.find('/foo/bar'),
 
-r = router.find('/people/john')
-assert.strictEqual(r.handler, 4)
-assert.strictEqual(r.params.name, 'john')
+  {
+    handler: 2,
+    params: {}
+  }
+)
 
-r = router.find('/404')
-assert.strictEqual(r.handler, 5)
+assert.deepStrictEqual(
+  router.find('/user/123'),
+
+  {
+    handler: 3,
+    params: {
+      id: '123'
+    }
+  }
+)
+
+assert.deepStrictEqual(
+  router.find('/user/456/articles'),
+
+  {
+    handler: 4,
+    params: {
+      id: '456',
+      page: 'articles'
+    }
+  }
+)
+
+assert.deepStrictEqual(
+  router.find('/people/john'),
+
+  {
+    handler: 5,
+    params: {
+      name: 'john'
+    }
+  }
+)
+
+assert.deepStrictEqual(
+  router.find('/404'),
+
+  {
+    handler: 6,
+    params: {}
+  }
+)
+
+assert.deepStrictEqual(
+  router.find('/2019-11'),
+
+  {
+    handler: 7,
+    params: {
+      year: '2019',
+      month: '11'
+    }
+  }
+)
 ```
 
 ## API

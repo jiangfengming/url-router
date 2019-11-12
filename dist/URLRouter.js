@@ -102,11 +102,11 @@ class Router {
       const match = remain.match(child.regex);
 
       if (match) {
-        if (child.param) {
-          params[child.param] = match[0];
-        }
+        if (match[0].length === remain.length && child.handler) {
+          if (child.param) {
+            params[child.param] = match[0];
+          }
 
-        if (match[0].length === remain.length) {
           return {
             handler: child.handler,
             params
@@ -115,6 +115,10 @@ class Router {
           const result = this._findOptim(remain.slice(match[0].length), child, params);
 
           if (result) {
+            if (child.param) {
+              params[child.param] = match[0];
+            }
+
             return result
           }
         }
