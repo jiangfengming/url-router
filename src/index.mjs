@@ -74,7 +74,7 @@ class Router {
   _findOptim(remain, node, params) {
     const child = node.children.string[remain]
 
-    if (child && child.handler) {
+    if (child && child.handler !== undefined) {
       return {
         handler: child.handler,
         params
@@ -100,7 +100,7 @@ class Router {
       const match = remain.match(child.regex)
 
       if (match) {
-        if (match[0].length === remain.length && child.handler) {
+        if (match[0].length === remain.length && child.handler !== undefined) {
           if (child.param) {
             params[child.param] = match[0]
           }
