@@ -12,7 +12,7 @@ npm install url-router
 const assert = require('assert')
 const Router = require('url-router')
 
-const router = new Router(
+const router = new Router([
   ['/foo', 1],
   ['/foo/bar', 2],
   ['/user/:id', 3],
@@ -20,7 +20,7 @@ const router = new Router(
   ['/people/:name(\\w+)', 5],
   ['(.*)', 6],
   ['/:year(\\d+)-:month(\\d+)', 7]
-)
+])
 
 assert.deepStrictEqual(
   router.find('/foo'),
@@ -100,16 +100,16 @@ assert.deepStrictEqual(
 
 ### Router
 ```js
-new Router(
+new Router([
   [pattern1, handler1],
   [pattern2, handler2],
   ...
-)
+])
 ```
 
 Creates a router instance.
 
-If parameters are provided, `router.add` will be applied on each parameter.
+If the routes array is provided, `router.add` will be applied on each route.
 
 ### router.add
 ```js

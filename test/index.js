@@ -1,7 +1,7 @@
 const assert = require('assert')
 const Router = require('..')
 
-const router = new Router(
+const router = new Router([
   ['/foo', 1],
   ['/foo/bar', 2],
   ['/user/:id', 3],
@@ -9,7 +9,7 @@ const router = new Router(
   ['/people/:name(\\w+)', 5],
   ['(.*)', 6],
   ['/:year(\\d+)-:month(\\d+)', 7]
-)
+])
 
 assert.deepStrictEqual(
   router.find('/foo'),

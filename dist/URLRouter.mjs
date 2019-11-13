@@ -6,18 +6,16 @@ var REGEX_MATCH_PARAM = /^(?::(\w+))?(?:\(([^)]+)\))?/;
 var Router =
 /*#__PURE__*/
 function () {
-  function Router() {
+  function Router(routes) {
     var _this = this;
 
     this.root = this._createNode();
 
-    for (var _len = arguments.length, routes = new Array(_len), _key = 0; _key < _len; _key++) {
-      routes[_key] = arguments[_key];
+    if (routes) {
+      routes.forEach(function (route) {
+        return _this.add.apply(_this, route);
+      });
     }
-
-    routes.forEach(function (route) {
-      return _this.add.apply(_this, route);
-    });
   }
 
   var _proto = Router.prototype;

@@ -4,9 +4,12 @@ const REGEX_INCLUDE_PARAM = /:\w|\(/
 const REGEX_MATCH_PARAM = /^(?::(\w+))?(?:\(([^)]+)\))?/
 
 class Router {
-  constructor(...routes) {
+  constructor(routes) {
     this.root = this._createNode()
-    routes.forEach(route => this.add(...route))
+
+    if (routes) {
+      routes.forEach(route => this.add(...route))
+    }
   }
 
   _createNode({ regex, param, handler } = {}) {
