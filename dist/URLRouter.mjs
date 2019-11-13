@@ -7,16 +7,17 @@ var Router =
 /*#__PURE__*/
 function () {
   function Router() {
+    var _this = this;
+
     this.root = this._createNode();
 
     for (var _len = arguments.length, routes = new Array(_len), _key = 0; _key < _len; _key++) {
       routes[_key] = arguments[_key];
     }
 
-    for (var _i = 0, _routes = routes; _i < _routes.length; _i++) {
-      var route = _routes[_i];
-      this.add.apply(this, route);
-    }
+    routes.forEach(function (route) {
+      return _this.add.apply(_this, route);
+    });
   }
 
   var _proto = Router.prototype;

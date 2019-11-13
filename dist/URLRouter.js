@@ -8,10 +8,7 @@ const REGEX_MATCH_PARAM = /^(?::(\w+))?(?:\(([^)]+)\))?/;
 class Router {
   constructor(...routes) {
     this.root = this._createNode();
-
-    for (const route of routes) {
-      this.add(...route);
-    }
+    routes.forEach(route => this.add(...route));
   }
 
   _createNode({ regex, param, handler } = {}) {
