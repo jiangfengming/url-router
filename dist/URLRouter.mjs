@@ -117,7 +117,7 @@ function () {
       if (match) {
         if (match[0].length === remain.length && child.handler !== undefined) {
           if (child.param) {
-            params[child.param] = match[0];
+            params[child.param] = decodeURIComponent(match[0]);
           }
 
           return {
@@ -129,7 +129,7 @@ function () {
 
           if (_result) {
             if (child.param) {
-              params[child.param] = match[0];
+              params[child.param] = decodeURIComponent(match[0]);
             }
 
             return _result;

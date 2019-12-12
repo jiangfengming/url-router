@@ -102,7 +102,7 @@ class Router {
       if (match) {
         if (match[0].length === remain.length && child.handler !== undefined) {
           if (child.param) {
-            params[child.param] = match[0]
+            params[child.param] = decodeURIComponent(match[0])
           }
 
           return {
@@ -114,7 +114,7 @@ class Router {
 
           if (result) {
             if (child.param) {
-              params[child.param] = match[0]
+              params[child.param] = decodeURIComponent(match[0])
             }
 
             return result

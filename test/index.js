@@ -6,7 +6,7 @@ const router = new Router([
   ['/foo/bar', 2],
   ['/user/:id', 3],
   ['/user/:id/:page', 4],
-  ['/people/:name(\\w+)', 5],
+  ['/people/:name([\\w%]+)', 5],
   ['(.*)', 6],
   ['/:year(\\d+)-:month(\\d+)', 7]
 ])
@@ -59,6 +59,17 @@ assert.deepStrictEqual(
     handler: 5,
     params: {
       name: 'john'
+    }
+  }
+)
+
+assert.deepStrictEqual(
+  router.find('/people/%E5%BC%A0%E4%B8%89'),
+
+  {
+    handler: 5,
+    params: {
+      name: '张三'
     }
   }
 )
