@@ -23,11 +23,11 @@
   },
   "homepage": "https://github.com/jiangfengming/url-router",
   "devDependencies": {
-    "@babel/core": "^7.7.5",
-    "@babel/preset-env": "^7.7.6",
-    "eslint": "^6.7.2",
+    "@babel/core": "^7.8.0",
+    "@babel/preset-env": "^7.8.2",
+    "eslint": "^6.8.0",
     "eslint-config-enough": "^0.3.8",
-    "rollup": "^1.27.11",
+    "rollup": "^1.29.0",
     "rollup-plugin-babel": "^4.3.3"
   },
   "babel": {
