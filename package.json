@@ -1,6 +1,6 @@
 {
   "name": "url-router",
-  "version": "11.0.2",
+  "version": "11.0.3",
   "description": "A Trie-based router",
   "main": "dist/URLRouter",
   "scripts": {
