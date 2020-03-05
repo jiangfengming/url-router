@@ -3,9 +3,7 @@ var REGEX_START_WITH_PARAM = /^(:\w|\()/;
 var REGEX_INCLUDE_PARAM = /:\w|\(/;
 var REGEX_MATCH_PARAM = /^(?::(\w+))?(?:\(([^)]+)\))?/;
 
-var Router =
-/*#__PURE__*/
-function () {
+var Router = /*#__PURE__*/function () {
   function Router(routes) {
     var _this = this;
 

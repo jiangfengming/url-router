@@ -127,14 +127,16 @@ You can define params in `pattern`, for example:
 
 ```js
 const router = new Router()
-router.add('/people/:username/articles/:articleId(\\d+)', handler)
-const result = router.find('/people/johnsmith/articles/123')
+router.add('/people/:username/:year(\\d+)-:month(\\d+)/:articleId(\\d+)', handler)
+const result = router.find('/people/johnsmith/2020-02/123')
 /*
 result:
 {
   handler: handler,
   params: {
     username: 'johnsmith',
+    year: '2020',
+    month: '02,
     articleId: '123'
   }
 }
