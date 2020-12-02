@@ -3,6 +3,7 @@ export default {
 
   output: {
     format: 'cjs',
-    file: 'dist/URLRouter.js'
+    file: 'dist/URLRouter.js',
+    exports: 'auto'
   }
-}
+};

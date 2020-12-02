@@ -24,12 +24,12 @@ class Router {
         string: {},
         regex: {}
       }
-    }
+    };
   }
 
   add(pattern, handler) {
     this._parseOptim(pattern, handler, this.root);
-    return this
+    return this;
   }
 
   _parse(remain, handler, parent) {
@@ -76,7 +76,7 @@ class Router {
   }
 
   find(path) {
-    return this._findOptim(path, this.root, {})
+    return this._findOptim(path, this.root, {});
   }
 
   _findOptim(remain, node, params) {
@@ -86,10 +86,10 @@ class Router {
       return {
         handler: child.handler,
         params
-      }
+      };
     }
 
-    return this._find(remain, node, params)
+    return this._find(remain, node, params);
   }
 
   _find(remain, node, params) {
@@ -99,7 +99,7 @@ class Router {
       const result = this._find(remain.slice(1), child, params);
 
       if (result) {
-        return result
+        return result;
       }
     }
 
@@ -116,7 +116,7 @@ class Router {
           return {
             handler: child.handler,
             params
-          }
+          };
         } else {
           const result = this._findOptim(remain.slice(match[0].length), child, params);
 
@@ -125,13 +125,13 @@ class Router {
               params[child.param] = decodeURIComponent(match[0]);
             }
 
-            return result
+            return result;
           }
         }
       }
     }
 
-    return null
+    return null;
   }
 }
 
