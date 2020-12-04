@@ -3,6 +3,7 @@
   "version": "11.0.4",
   "description": "A Trie-based router",
   "main": "./dist/url-router.cjs",
+  "module": "./dist/url-router.js",
   "type": "module",
   "exports": {
     "import": "./dist/url-router.js",
