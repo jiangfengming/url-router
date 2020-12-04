@@ -1,5 +1,5 @@
-const assert = require('assert');
-const Router = require('..');
+import assert from 'assert';
+import Router from '../src/index.js';
 
 const router = new Router([
   ['/foo', 1],

@@ -2,7 +2,12 @@
   "name": "url-router",
   "version": "11.0.4",
   "description": "A Trie-based router",
-  "main": "dist/URLRouter",
+  "main": "./dist/url-router.cjs",
+  "type": "module",
+  "exports": {
+    "import": "./dist/url-router.js",
+    "require": "./dist/url-router.cjs"
+  },
   "scripts": {
     "build": "rollup -c rollup.config.esm.js && rollup -c rollup.config.cjs.js",
     "test": "node test"
@@ -27,7 +32,7 @@
     "@babel/preset-env": "^7.12.7",
     "eslint": "^7.14.0",
     "eslint-config-enough": "^0.6.0",
-    "rollup": "^2.34.0",
+    "rollup": "^2.34.1",
     "rollup-plugin-babel": "^4.3.3"
   },
   "babel": {

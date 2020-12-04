@@ -9,8 +9,8 @@ npm install url-router
 ## Examples
 
 ```js
-const assert = require('assert')
-const Router = require('url-router')
+import assert from 'assert';
+import Router from 'url-router';
 
 const router = new Router([
   ['/foo', 1],
@@ -20,7 +20,7 @@ const router = new Router([
   ['/people/:name(\\w+)', 5],
   ['(.*)', 6],
   ['/:year(\\d+)-:month(\\d+)', 7]
-])
+]);
 
 assert.deepStrictEqual(
   router.find('/foo'),
@@ -29,7 +29,7 @@ assert.deepStrictEqual(
     handler: 1,
     params: {}
   }
-)
+);
 
 assert.deepStrictEqual(
   router.find('/foo/bar'),
@@ -38,7 +38,7 @@ assert.deepStrictEqual(
     handler: 2,
     params: {}
   }
-)
+);
 
 assert.deepStrictEqual(
   router.find('/user/123'),
@@ -49,7 +49,7 @@ assert.deepStrictEqual(
       id: '123'
     }
   }
-)
+);
 
 assert.deepStrictEqual(
   router.find('/user/456/articles'),
@@ -61,7 +61,7 @@ assert.deepStrictEqual(
       page: 'articles'
     }
   }
-)
+);
 
 assert.deepStrictEqual(
   router.find('/people/john'),
@@ -72,7 +72,7 @@ assert.deepStrictEqual(
       name: 'john'
     }
   }
-)
+);
 
 assert.deepStrictEqual(
   router.find('/404'),
@@ -81,7 +81,7 @@ assert.deepStrictEqual(
     handler: 6,
     params: {}
   }
-)
+);
 
 assert.deepStrictEqual(
   router.find('/2019-11'),
@@ -93,7 +93,7 @@ assert.deepStrictEqual(
       month: '11'
     }
   }
-)
+);
 ```
 
 ## API
