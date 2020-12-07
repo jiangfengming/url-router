@@ -31,10 +31,10 @@
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.12.7",
-    "eslint": "^7.14.0",
+    "@rollup/plugin-babel": "^5.2.2",
+    "eslint": "^7.15.0",
     "eslint-config-enough": "^0.6.0",
-    "rollup": "^2.34.1",
-    "rollup-plugin-babel": "^4.3.3"
+    "rollup": "^2.34.2"
   },
   "babel": {
     "presets": [
