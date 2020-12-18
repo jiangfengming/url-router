@@ -6,6 +6,9 @@ A Trie-based router.
 npm install url-router
 ```
 
+NOTE: This package is written in ES2020 syntax and not transpiled. It is only tested on Node.js v14 LTS.
+To use it in old browsers, you need to transpile the code using tool such as Babel.
+
 ## Examples
 
 ```js
@@ -126,9 +129,9 @@ Adds a route definition.
 You can define params in `pattern`, for example:
 
 ```js
-const router = new Router()
-router.add('/people/:username/:year(\\d+)-:month(\\d+)/:articleId(\\d+)', handler)
-const result = router.find('/people/johnsmith/2020-02/123')
+const router = new Router();
+router.add('/people/:username/:year(\\d+)-:month(\\d+)/:articleId(\\d+)', handler);
+const result = router.find('/people/johnsmith/2020-02/123');
 /*
 result:
 {
@@ -154,7 +157,7 @@ router.add('(.*)', NotFound)
 This defines a catch-all route.
 
 ##### handler
-`Any`. The handler you wish to handle the request.
+`any`. The handler you wish to handle the request.
 Based on your framework design, the handler can be a function to handle the request,
 or the file path to your controller file, or an object (such as Vue component), etc.
 
@@ -177,7 +180,7 @@ Finds the route which matches the path.
 #### Parameters
 
 ##### path
-`String.` The request path.  
+`String`. The request path.  
 
 #### Returns
 

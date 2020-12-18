@@ -1,5 +1,5 @@
 import assert from 'assert';
-import Router from '../src/index.js';
+import Router from '../dist/index.js';
 
 const router = new Router([
   ['/foo', 1],
