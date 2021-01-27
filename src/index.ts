@@ -57,7 +57,7 @@ class Router<T> {
     };
   }
 
-  add(pattern: string, handler: T) {
+  add(pattern: string, handler: T): this {
     this.parseOptim(pattern, handler, this.root);
     return this;
   }
@@ -108,7 +108,7 @@ class Router<T> {
     }
   }
 
-  find(path: string) {
+  find(path: string): Result<T> | null {
     return this.findOptim(path, this.root, {});
   }
 
