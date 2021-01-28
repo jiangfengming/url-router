@@ -1,13 +1,16 @@
 # url-router
 A Trie-based router.
 
+## V13 Breaking Change
+The constructor's `routes` parameter changed to key-value object that key is pattern and value is handler.
+
 ## Installation
 ```
 npm install url-router
 ```
 
-NOTE: This package is written in ES2020 syntax and not transpiled. It is only tested on Node.js v14 LTS.
-To use it in old browsers, you need to transpile the code using tool such as Babel.
+NOTE: This package is written in ES2020 syntax and not transpiled. It is tested only on Node.js v14 LTS.
+To use it in old browsers, you should transpile the code using tools such as Babel.
 
 ## Examples
 
@@ -15,15 +18,15 @@ To use it in old browsers, you need to transpile the code using tool such as Bab
 import assert from 'assert';
 import Router from 'url-router';
 
-const router = new Router([
-  ['/foo', 1],
-  ['/foo/bar', 2],
-  ['/user/:id', 3],
-  ['/user/:id/:page', 4],
-  ['/people/:name(\\w+)', 5],
-  ['(.*)', 6],
-  ['/:year(\\d+)-:month(\\d+)', 7]
-]);
+const router = new Router({
+  '/foo': 1,
+  '/foo/bar': 2,
+  '/user/:id': 3,
+  '/user/:id/:page': 4,
+  '/people/:name(\\w+)': 5,
+  '(.*)': 6,
+  '/:year(\\d+)-:month(\\d+)': 7
+});
 
 assert.deepStrictEqual(
   router.find('/foo'),
@@ -103,23 +106,28 @@ assert.deepStrictEqual(
 
 ### Router
 ```js
-new Router([
-  [pattern1, handler1],
-  [pattern2, handler2],
+const routes = {
+  pattern_1: handler_1,
+  pattern_2: handler_2,
   ...
-])
+};
+
+router = new Router(routes);
 ```
 
 Creates a router instance.
 
-If the routes array is provided, `router.add` will be applied on each route.
+#### Params
+##### routes
+Optional. A key-value object that key is pattern and value is handler.
+See `router.add()` below for how to define pattern and handler.
 
 ### router.add
 ```js
 router.add(pattern, handler)
 ```
 
-Adds a route definition.
+Adds a route entry.
 
 #### Params
 

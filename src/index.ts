@@ -3,8 +3,6 @@ const REGEX_START_WITH_PARAM = /^(:\w|\()/;
 const REGEX_INCLUDE_PARAM = /:\w|\(/;
 const REGEX_MATCH_PARAM = /^(?::(\w+))?(?:\(([^)]+)\))?/;
 
-type Route<T> = [string, T];
-
 type Node<T> = {
   regex?: RegExp,
   param?: string,
@@ -26,11 +24,11 @@ type Result<T> = {
 class Router<T> {
   private root: Node<T>
 
-  constructor(routes?: Route<T>[]) {
+  constructor(routes?: Record<string, T>) {
     this.root = this.createNode();
 
     if (routes) {
-      routes.forEach(route => this.add(...route));
+      Object.entries(routes).forEach(route => this.add(...route));
     }
   }
 

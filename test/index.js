@@ -1,15 +1,15 @@
 import assert from 'assert';
 import Router from '../dist/index.js';
 
-const router = new Router([
-  ['/foo', 1],
-  ['/foo/bar', 2],
-  ['/user/:id', 3],
-  ['/user/:id/:page', 4],
-  ['/people/:name([\\w%]+)', 5],
-  ['(.*)', 6],
-  ['/:year(\\d+)-:month(\\d+)', 7]
-]);
+const router = new Router({
+  '/foo': 1,
+  '/foo/bar': 2,
+  '/user/:id': 3,
+  '/user/:id/:page': 4,
+  '/people/:name([\\w%]+)': 5,
+  '(.*)': 6,
+  '/:year(\\d+)-:month(\\d+)': 7
+});
 
 assert.deepStrictEqual(
   router.find('/foo'),

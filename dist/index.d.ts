@@ -1,11 +1,10 @@
-declare type Route<T> = [string, T];
 declare type Result<T> = {
     handler: T;
     params: Record<string, string>;
 };
 declare class Router<T> {
     private root;
-    constructor(routes?: Route<T>[]);
+    constructor(routes?: Record<string, T>);
     private createNode;
     add(pattern: string, handler: T): this;
     private parseOptim;

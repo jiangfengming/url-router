@@ -8,7 +8,7 @@ class Router {
     constructor(routes) {
         this.root = this.createNode();
         if (routes) {
-            routes.forEach(route => this.add(...route));
+            Object.entries(routes).forEach(route => this.add(...route));
         }
     }
     createNode({ regex, param, handler } = {}) {
