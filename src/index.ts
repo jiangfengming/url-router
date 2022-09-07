@@ -22,7 +22,7 @@ type Result<T> = {
 };
 
 class Router<T> {
-  private root: Node<T>
+  private root: Node<T>;
 
   constructor(routes?: Record<string, T>) {
     this.root = this.createNode();
